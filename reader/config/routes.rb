@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
-  get 'read/index'
-
   root 'read#index'
+
+  get 'read/index'
+  get '/read', to: 'read#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
