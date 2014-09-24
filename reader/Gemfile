@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 case RUBY_PLATFORM
   when /x64-mingw32/
-    ruby '2.0.0'
+    ruby '2.1.3'
   when /i386-mingw32/
     ruby '1.9.3'
   when /java/
