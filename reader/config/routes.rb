@@ -1,8 +1,7 @@
 Rails.application.routes.draw do
-  root 'read#index'
+  get 'articles/index'
 
-  get 'read/index'
-  get '/read', to: 'read#index'
+  get '/', to: redirect(path: 'articles/index', status: 302)
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

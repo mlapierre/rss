@@ -1,8 +1,0 @@
-source 'http://rubygems.org'
-
-gem 'simple-rss'
-gem 'pg'
-
-group :development do
-  gem 'pry'
-end
