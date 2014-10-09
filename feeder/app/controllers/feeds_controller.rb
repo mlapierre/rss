@@ -21,6 +21,13 @@ class FeedsController < ApplicationController
   def edit
   end
 
+  # GET /feeds/add
+  def add
+    link = params[:link]
+
+    @feed = Feed.new(feed_params)
+  end
+
   # POST /feeds
   # POST /feeds.json
   def create
@@ -69,6 +76,6 @@ class FeedsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def feed_params
-      params.require(:feed).permit(:link, :title)
+      params.require(:feed).permit(:link, :title, :author, :summary, :entry, :updated, :published)
     end
 end
