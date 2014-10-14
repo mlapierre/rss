@@ -2,12 +2,22 @@
 
 <p>
   <strong>Link:</strong>
-  <%= @feed.link %>
+  <%= @feed.feed_link %>
 </p>
 
 <p>
   <strong>Title:</strong>
   <%= @feed.title %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @feed.description %>
+</p>
+
+<p>
+  <strong>Updated:</strong>
+  <%= @feed.updated %>
 </p>
 
 <%= link_to 'Edit', edit_feed_path(@feed) %> |

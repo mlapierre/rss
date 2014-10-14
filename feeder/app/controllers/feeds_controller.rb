@@ -25,10 +25,24 @@ class FeedsController < ApplicationController
   def add
     link = params[:link]
     @feed = Feed.find_by feed_link: link
-    return if !@feed.nil?
+    if !@feed.nil?
+      respond_to do |format|
+        format.html { redirect_to @feed, notice: 'Feed already subscribed.' }
+        format.json { render :show, status: :ok, location: @feed }
+      end
+      return
+    end
 
     @feed = FeedsHelper.parse_feed(link)
-    p @feed
+    respond_to do |format|
+      if @feed.save
+        format.html { redirect_to @feed, notice: 'Feed was successfully created.' }
+        format.json { render :show, status: :created, location: @feed }
+      else
+        format.html { render :new }
+        format.json { render json: @feed.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
   # POST /feeds
