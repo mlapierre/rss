@@ -24,8 +24,11 @@ class FeedsController < ApplicationController
   # GET /feeds/add
   def add
     link = params[:link]
+    @feed = Feed.find_by feed_link: link
+    return if !@feed.nil?
 
-    @feed = Feed.new(feed_params)
+    @feed = FeedsHelper.parse_feed(link)
+    p @feed
   end
 
   # POST /feeds
@@ -76,6 +79,6 @@ class FeedsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def feed_params
-      params.require(:feed).permit(:link, :title, :author, :summary, :entry, :updated, :published)
+      params.require(:feed).permit(:feed_link, :source_link, :title, :description, :updated, :subtitle, :icon)
     end
 end
