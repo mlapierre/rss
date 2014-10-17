@@ -39,6 +39,7 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 #gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 
 gem 'pg'
-gem 'simple-rss'
+#gem 'simple-rss'
+gem 'feedjira'
 gem 'execjs'
 gem 'nokogiri'

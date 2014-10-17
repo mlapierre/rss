@@ -33,9 +33,19 @@ class FeedsController < ApplicationController
       return
     end
 
-    @feed = FeedsHelper.parse_feed(link)
+    feed_source = FeedsHelper.fetch_feed_source(link)
+
+    @feed = Feed.new
+    @feed.title = feed_source.title
+    @feed.description = feed_source.description
+    @feed.updated = feed_source.last_modified
+
+    @feed.feed_link = feed_source.feed_url #TODO check if the link found in the xml doesn't match the url
+    @feed.source_link = feed_source.url
+
     respond_to do |format|
       if @feed.save
+        EntriesHelper.save_from(feed_source, @feed)
         format.html { redirect_to @feed, notice: 'Feed was successfully created.' }
         format.json { render :show, status: :created, location: @feed }
       else
