@@ -5,8 +5,8 @@ default: &default
   username: rss
   password: <%= ENV['POSTGRES_RSS_PASSWORD'] %>
   encoding: utf8
-  host: localhost
-  port: 5432
+  host: <%= ENV['FEEDER_DB_PORT_5432_TCP_ADDR'] %>
+  port: <%= ENV['FEEDER_DB_PORT_5432_TCP_PORT'] %>
 
 development:
   <<: *default
