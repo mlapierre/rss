@@ -14,7 +14,7 @@ module EntriesHelper
       entry.author = source_entry.author
       entry.content = source_entry.content
       entry.summary = source_entry.summary
-      #entry.image = source_entry.image
+      entry.image = source_entry.image if source_entry.respond_to? 'image'
       entry.updated = source_entry.updated if source_entry.respond_to? 'updated'
       entry.published = source_entry.published
       entry.save
