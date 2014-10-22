@@ -1,3 +1,3 @@
 FROM rails:onbuild
 
-RUN . ./bin/setenv.sh
+RUN . /usr/src/app/bin/setenv.sh
