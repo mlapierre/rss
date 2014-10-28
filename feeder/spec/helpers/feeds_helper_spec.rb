@@ -66,8 +66,15 @@ RSpec.describe FeedsHelper, :type => :helper do
       0.upto(output.length-1) do |i|
         expect(opml[i].attributes).to eq output[i].attributes
       end
-      
     end
+
+    it "parses an opml file into an OpmlParser object" do
+      expect(FeedsHelper).to receive(:import_opml).with(opml_xml)
+
+      filename = "spec/fixtures/test_opml.xml"
+      FeedsHelper.import_opml_from(filename)
+    end
+
   end
 
 end

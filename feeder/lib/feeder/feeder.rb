@@ -11,4 +11,9 @@ class Feeder
     end
   end
 
+  def self.import_opml_from(file)
+    puts "Importing opml: #{file}"
+    FeedsHelper.import_opml_from(file)
+  end
+
 end

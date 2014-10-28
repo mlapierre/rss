@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Test subscriptions</title>
+  </head>
+  <body>
+    <outline text="science" title="science">
+      <outline text="AnandTech" title="AnandTech" type="rss" xmlUrl="http://anandtech.com/rss" htmlUrl="http://www.anandtech.com/"/>
+      <outline text="Freakonomics" title="Freakonomics" type="rss" xmlUrl="http://freakonomics.com/blog/feed/" htmlUrl="http://freakonomics.com/"/>
+    </outline>
+    <outline text="tech" title="tech">
+      <outline text="Chromium Blog" title="Chromium Blog" type="rss" xmlUrl="http://blog.chromium.org/feeds/posts/default" htmlUrl="http://blog.chromium.org/"/>
+    </outline>
+  </body>
+</opml>
