@@ -1,4 +1,7 @@
 require 'feedjira'
+require 'opml-parser'
+
+include OpmlParser
 
 module FeedsHelper
 
@@ -12,6 +15,10 @@ module FeedsHelper
 
   def self.fetch_feed_source(link)
     FeedsHelper.fetch_and_parse link
+  end
+
+  def self.import_opml(content)
+    OpmlParser.import(content)
   end
 
 end

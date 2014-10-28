@@ -39,8 +39,12 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 #gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 
 gem 'pg'
-#gem 'simple-rss'
 gem 'feedjira'
 gem 'execjs'
 gem 'nokogiri'
 gem 'clockwork'
+gem 'opml-parser'
+
+group :test, :development do
+  gem 'rspec-rails'
+end
