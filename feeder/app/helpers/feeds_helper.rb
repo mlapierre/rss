@@ -5,6 +5,8 @@ include OpmlParser
 
 module FeedsHelper
 
+  mattr_accessor :log
+
   def self.bulk_fetch_and_parse(links)
     Feedjira::Feed.fetch_and_parse links
   end
@@ -18,26 +20,31 @@ module FeedsHelper
   end
 
   def self.import_opml_from(file)
+    log.debug "Reading opml content from file"
     content = File.open(file).readlines.each { |x| x.strip! }.join("\n")
     FeedsHelper.import_opml(content + "\n")
   end
 
   def self.import_opml(content)
+    log.debug "Parsing opml"
     opml = OpmlParser.import(content)
     opml.each do |outline|
       if !outline.attributes.include? :xmlUrl
-        puts "Skipping #{outline.attributes[:title]}" if outline.attributes.include? :title
+        log.info "Skipping #{outline.attributes[:title]}" if outline.attributes.include? :title
         next
       end
       feed = Feed.find_by feed_link: outline.attributes[:xmlUrl]
       if !feed.nil?
-        puts "Skipping #{outline.attributes[:xmlUrl]}"
+        log.info "Skipping #{outline.attributes[:xmlUrl]}"
         next
       end
 
-      puts "Importing #{outline.attributes[:xmlUrl]}"
+      log.info "Importing #{outline.attributes[:xmlUrl]}"
       feed_source = FeedsHelper.fetch_and_parse(outline.attributes[:xmlUrl]) 
-      next unless feed_source.respond_to? :feed_url #TODO more appropriate error handling
+      if !feed_source.respond_to? :feed_url #TODO more appropriate error handling
+        log.warn "Invalid feed. Request returned: #{feed_source.to_s}"
+        next
+      end
       
       feed = Feed.new
       feed.title = feed_source.title
@@ -48,6 +55,7 @@ module FeedsHelper
       feed.source_link = feed_source.url
 
       if feed.save
+        log.debug "Saving feed entries..."
         EntriesHelper.save_from(feed_source, feed)      
       end
     end

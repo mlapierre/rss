@@ -44,6 +44,7 @@ gem 'execjs'
 gem 'nokogiri'
 gem 'clockwork'
 gem 'opml-parser'
+gem 'log4r'
 
 group :test, :development do
   gem 'rspec-rails'
