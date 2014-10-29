@@ -8,5 +8,8 @@ module Clockwork
     puts "Running #{job}"
   end
 
-  every(1.hour, 'update_feeds') { Feeder.update_feeds }
+  every(1.hour, 'update_feeds') do
+    feeder = Feeder.new
+    feeder.update_feeds
+  end
 end
