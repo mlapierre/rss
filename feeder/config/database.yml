@@ -4,7 +4,7 @@ default: &default
   timeout: 5000
   username: rss
   password: <%= ENV['POSTGRES_RSS_PASSWORD'] %>
-  encoding: utf8
+  encoding: utf-8
   host: <%= ENV['FEEDER_DB_PORT_5432_TCP_ADDR'] %>
   port: <%= ENV['FEEDER_DB_PORT_5432_TCP_PORT'] %>
 
