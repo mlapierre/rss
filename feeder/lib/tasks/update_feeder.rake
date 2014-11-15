@@ -1,3 +1,4 @@
+require 'sucker_punch'
 require_relative '../../lib/feeder/feeder'
 
 desc 'Update all subscribed feeds'

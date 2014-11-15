@@ -46,6 +46,8 @@ gem 'clockwork'
 gem 'opml-parser'
 gem 'log4r'
 gem 'mechanize'
+#gem 'sucker_punch'
+gem 'resque'
 
 group :test, :development do
   gem 'rspec-rails'

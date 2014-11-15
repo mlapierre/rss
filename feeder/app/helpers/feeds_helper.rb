@@ -16,7 +16,9 @@ module FeedsHelper
   end
 
   def self.fetch_feed_source(link)
-    FeedsHelper.fetch_and_parse link
+    feed_source = FeedsHelper.fetch_and_parse link
+    log.warn "Invalid feed. Request returned: #{feed_source.to_s}" if !feed_source.respond_to? :feed_url #TODO more appropriate error handling
+    feed_source
   end
 
   def self.import_opml_from(file)

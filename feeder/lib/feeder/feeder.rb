@@ -12,23 +12,21 @@ class Feeder
     mech_log = Log4r::Logger["Feeder Mechanized"]
     FeedsHelper.log = @log
     EntriesHelper.log = mech_log
+    SuckerPunch.logger = @log
   end
 
   def update_feeds
-    @log.info "Updating feeds..."
+    # TODO allow update frequency to be restricted
+    @log.info "Queuing feeds..."
     Feed.find_each.with_index do |feed, index|
-      # TODO allow update frequency to be restricted
-      @log.debug "Fetching: #{feed.title} [#{index+1}/#{Feed.count}]"
-      feed_source = FeedsHelper.fetch_feed_source(feed.feed_link)
-      if !feed_source.respond_to? :feed_url #TODO more appropriate error handling
-        @log.warn "Invalid feed. Request returned: #{feed_source.to_s}"
-        next
-      end
-
-      # TODO don't bother processing the entries if the feed hasn't been updated since last fetched
-      EntriesHelper.save_from(feed_source, feed)
+      @log.debug "Queuing: #{feed.title} [#{index+1}/#{Feed.count}]"
+      async_update_feed(feed.id)
     end
-    @log.info "Update complete"
+    @log.info "All feeds queued"
+  end
+
+  def async_update_feed(feed_id)
+    UpdateFeedJob.new.async.perform(feed_id)
   end
 
   def import_opml_from(file)

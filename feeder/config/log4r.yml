@@ -14,7 +14,7 @@
     - type        : DateFileOutputter
       name        : feeder_logfile
       level       : DEBUG
-      date_pattern: 'feeder_%Y%m%dT%H%M'
+      date_pattern: 'feeder_%Y%m%dT%H'
       default     : true
       trunc       : 'false'
       dirname     : "log"
@@ -26,7 +26,7 @@
     - type        : DateFileOutputter
       name        : mech_logfile
       level       : DEBUG
-      date_pattern: 'mech_%Y%m%dT%H%M'
+      date_pattern: 'mech_%Y%m%dT%H'
       default     : true
       trunc       : 'false'
       dirname     : "log"
