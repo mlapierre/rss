@@ -29,7 +29,7 @@ module EntriesHelper
 
   # Fetch the full HTML of the entry
   def self.async_store_entry_html(id, url, title)
-    StoreEntryHTMLJob.new.async.perform(id, url, title)
+    Resque.enqueue(StoreEntryHTMLJob, id, url, title)
   end
 
 end

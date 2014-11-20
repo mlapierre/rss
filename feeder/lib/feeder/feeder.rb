@@ -12,7 +12,6 @@ class Feeder
     mech_log = Log4r::Logger["Feeder Mechanized"]
     FeedsHelper.log = @log
     EntriesHelper.log = mech_log
-    SuckerPunch.logger = @log
   end
 
   def update_feeds
@@ -26,7 +25,7 @@ class Feeder
   end
 
   def async_update_feed(feed_id)
-    UpdateFeedJob.new.async.perform(feed_id)
+    Resque.enqueue(UpdateFeedJob, feed_id)
   end
 
   def import_opml_from(file)
