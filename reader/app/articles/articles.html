@@ -1,0 +1,6 @@
+<div ng-repeat="entry in entries">
+  <div class="article" id="article_{{entry.id}}">
+    <div class="article_title">{{entry.title}}</div>
+    <div class="article_summary" ng-bind-html="entry.summary" />
+  </div>
+</div>

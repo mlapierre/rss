@@ -6,6 +6,8 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+#require_relative "../app/api/feeds"
+
 module SqlFeeder
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
@@ -20,5 +22,7 @@ module SqlFeeder
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     config.encoding = "utf-8"
+    config.paths.add "app/api", glob: "**/*.rb", eager_load: true
+    config.autoload_paths += Dir["#{Rails.root}/app/api/*"]    
   end
 end

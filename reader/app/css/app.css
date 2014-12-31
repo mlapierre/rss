@@ -1,0 +1,12 @@
+/* bootstrap empty href fix: http://angular-ui.github.io/bootstrap/ */
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+.article {
+  margin-bottom: 2em;  
+}
+
+.article_title {
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+

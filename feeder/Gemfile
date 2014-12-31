@@ -36,9 +36,9 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 # gem 'debugger', group: [:development, :test]
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-#gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
 
-gem 'pg'
+gem 'pg', '~> 0.18.0.pre'
 gem 'feedjira'
 gem 'execjs'
 gem 'nokogiri'
@@ -48,6 +48,12 @@ gem 'log4r'
 gem 'mechanize'
 #gem 'sucker_punch'
 gem 'resque'
+
+# Grape for a simple REST-list DSL
+gem 'grape'
+gem 'grape-rails-routes'
+#gem 'rack-contrib'
+gem 'rack-cors'
 
 group :test, :development do
   gem 'rspec-rails'
