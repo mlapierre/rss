@@ -2,3 +2,5 @@
 /*.sublime-workspace
 
 feeder/bin/setenv.sh
+/feeder/bin/setenvwin.bat
+/feeder/config/.env

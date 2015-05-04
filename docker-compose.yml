@@ -1,0 +1,27 @@
+api:
+  build: ./feeder
+  ports:
+   - "3000:3000"
+  volumes:
+   - ./feeder:/code
+  links:
+   - pgdb
+  env_file:
+   - ./feeder/config/.env
+pgdb:
+  build: ./feeder_db
+  volumes_from:
+   - feeder_data
+  ports:
+   - "5432:5432"
+  expose:
+   - "5432"
+web:
+  build: ./reader
+  ports:
+   - "8000:8000"   
+  links:
+   - api
+  environment:
+    API_ADDR: boot2docker
+    API_PORT: 3000

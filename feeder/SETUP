@@ -1,0 +1,27 @@
+# Create a data volume container
+docker create -v /dbdata --name feeder_data postgres:9.3
+
+# Restore pg db from backup. E.g.
+# With the backup on the docker host located at D:\Dev\rss\rss-master\backup\pg_backup_20140131.tar
+# And shared via a shared folder configured on the boot2docker VM as "d/Dev"
+# And mounted at /mnt/ddev automatically via /var/lib/boot2docker/bootlocal.sh inside the VM
+# From /mnt/ddev/rss/rss-master/backup execute:
+ docker run --rm --volumes-from feeder_data -v $(pwd):/backup busybox tar xvf /backup/pg_backup_20140131.tar -C /var/lib/postgresql/
+docker run --rm --volumes-from feeder_data -v $(pwd):/backup busybox tar xvf /backup/pg_backup_20140131.tar -C /dbdata
+docker run --rm --volumes-from feeder_data postgres:9.3 mv /dbdata/Library/PostgreSQL/9.3/data/* /dbdata
+docker run --rm --volumes-from feeder_data postgres:9.3 chown -R postgres:postgres /dbdata
+docker run --rm --volumes-from feeder_data postgres:9.3 rm -R /dbdata/Library
+
+# Or if already untarred locally
+docker run --rm --volumes-from feeder_data -v $(pwd):/backup postgres:9.3 cp -R /backup/pg_data/* /dbdata
+docker run --rm --volumes-from feeder_data postgres:9.3 chown -R postgres:postgres /dbdata
+docker run --rm --volumes-from feeder_data postgres:9.3 chmod -R 0700 /dbdata
+
+# Update the postgresql server config in the data volume container
+docker run --rm --volumes-from feeder_data -v /mnt/mydocs/Dropbox/Dev/rss/rss-master/feeder_db:/code postgres:9.3 cp /code/pg_hba.conf /dbdata/pg_hba.conf
+
+# Test if psql server can be reached
+docker run --rm -ti --name pgtest --volumes-from feeder_data -p 5432:5432 app_pgdb
+docker run --rm -ti --volumes-from feeder_data --link app_pgdb_1:db postgres:9.3 /bin/bash
+psql -h 192.168.59.103 -p 5432 -d rss_dev -U postgres --password
+psql -h $DB_PORT_5432_TCP_ADDR -p 5432 -d rss_dev -U postgres --password
