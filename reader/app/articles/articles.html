@@ -1,6 +1,8 @@
-<div ng-repeat="entry in entries">
-  <article id="article_{{entry.id}}"> 
-    <header><h2><a href="{{entry.url}}" target="_blank">{{entry.title}}</a></h2></header>
+<div ng-repeat="entry in entries" ng-click="activateArticle($index)">
+  <article id="article_{{entry.id}}" ng-class="{ 'active_article': $index == selectedIndex }"> 
+    <header>
+      <h2><a href="{{entry.url}}" target="_blank">{{entry.title}}</a></h2>
+    </header>
     <section class="article_summary" ng-bind-html="entry.summary" />
   </article>
 </div>
