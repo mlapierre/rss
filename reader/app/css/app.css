@@ -10,3 +10,40 @@
   margin-bottom: 1em;
 }
 
+
+.container {
+  display: -webkit-flex;
+  display: flex;
+}
+
+#feeds_panel {
+  width: 20em;
+}
+
+#entries_panel {
+  -webkit-flex: 1;
+          flex: 1;
+  height: 95vh;
+  overflow-y: scroll;
+}
+
+nav {
+  height: 5vh;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.panel-heading {
+  height: 5vh;
+}
+
+.panel-title {
+  margin: 0;
+}
+
+.panel-body {
+  height: 90vh;
+  overflow: scroll;
+  align-items: stretch;
+  overflow-x: hidden;
+}
