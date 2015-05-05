@@ -41,26 +41,29 @@
   <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
-  <nav>RSS reader app: v<span app-version></span></nav>
-  <div class="container">
-    
-
-    <div ng-controller="feedsPanelCtrl" id="feeds_panel">
-      <accordion>
-        <accordion-group heading="Feeds">
-          <div ng-repeat="feed in feeds">
-            <a href="#/feed/{{feed.id}}">{{feed.title}}</a>
-          </div>
-        </accordion-group>
-      </accordion>
-    </div>
-
-    <div id="entries_panel">
+  <div class="nav_wrap">
+    <nav>
+      <header>RSS reader app: v<span app-version></span></header>
+    </nav>
+  </div>
+  <div class="main_wrap">
+    <div class="container">
       
-      <div ng-view />
-    </div>
+      <div ng-controller="feedsPanelCtrl" id="feeds_panel">
+        <accordion>
+          <accordion-group heading="Feeds">
+            <div ng-repeat="feed in feeds">
+              <a href="#/feed/{{feed.id}}">{{feed.title}}</a>
+            </div>
+          </accordion-group>
+        </accordion>
+      </div>
 
-    
+      <div id="entries_panel">
+        <div ng-view id="entries_view"/>
+      </div>
+      
+      </div>
     </div>
   </div>
 

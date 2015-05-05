@@ -1,49 +1,75 @@
-/* bootstrap empty href fix: http://angular-ui.github.io/bootstrap/ */
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-
-.article {
-  margin-bottom: 2em;  
+h2 {
+  font-size: 1.2em;
+  padding-top: 0.5em;
 }
 
-.article_title {
-  font-weight: bold;
-  margin-bottom: 1em;
+article {
+  background-color: #E9EDF2;
+  margin-bottom: 0.5rem;
+  padding: 0 1rem 0.5rem 1rem;
 }
 
+.main_wrap {
+  display: -webkit-flex;
+  display: flex;
+  justify-content: center;
+  background-color: #D8E0E6;
+}
+
+.nav_wrap {
+  display: -webkit-flex;
+  display: flex;
+  justify-content: center;
+  background-color: #7777bb;
+}
 
 .container {
   display: -webkit-flex;
   display: flex;
+  max-width: 1200px;
 }
 
 #feeds_panel {
-  width: 20em;
+  width: 20rem;
+  padding-left: 1rem;
 }
 
 #entries_panel {
   -webkit-flex: 1;
           flex: 1;
-  height: 95vh;
+  height: 93vh;
   overflow-y: scroll;
 }
 
+#entries_view {
+  padding: 1rem;
+}
+
 nav {
-  height: 5vh;
+  height: 7vh;
   display: -webkit-flex;
   display: flex;
+  color: #eeeeee;  
+  max-width: 1200px;
+  width: 100%;
+}
+
+nav header {
+  margin: 0.5rem 1rem;
 }
 
 .panel-heading {
-  height: 5vh;
+  height: 7vh;
+  align-items: center;
 }
 
 .panel-title {
   margin: 0;
+  padding-top: 1rem;
 }
 
 .panel-body {
-  height: 90vh;
+  height: 86vh;
   overflow: scroll;
-  align-items: stretch;
   overflow-x: hidden;
 }
