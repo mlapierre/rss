@@ -25,3 +25,5 @@ web:
   environment:
     API_ADDR: boot2docker
     API_PORT: 3000
+  volumes:
+   - /mnt/mydocs/Dropbox/Dev/rss/reader_prototype:/code
