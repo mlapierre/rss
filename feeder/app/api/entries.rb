@@ -6,6 +6,11 @@ module Entries
 
     resource :entries do
 
+      desc "Return all entries"
+      get do
+        Entry.all
+      end
+
       desc "Return an entry"
       params do
         requires :id, type: Integer, desc: "Entry id."
