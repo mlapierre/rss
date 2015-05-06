@@ -16,26 +16,50 @@
 /* Feeds list */
 #feeds_panel {
   width: 20rem;
-  padding-left: 1rem;
+  padding-right: 2rem;
+  overflow: hidden;
+}
+
+#feeds_panel:hover {
+  overflow-y: scroll;
 }
 
 .panel-heading {
-  height: 7vh;
+  height: 3rem;
   align-items: center;
+}
+
+.panel-heading a {
+  padding-left: 1rem;
+  text-decoration: none;
+  color: #305371;
 }
 
 .panel-title {
   margin: 0;
+  padding:0;
   padding-top: 1rem;
 }
 
 .panel-body {
   height: 86vh;
-  overflow: hidden;
+  line-height: 1em;
 }
 
-.panel-body:hover {
-  overflow-y: scroll;
+.panel-body a {
+  padding: 1px 1em 1px 1em;
+  display: inline-block;
+  text-decoration: none;
+  font-weight: bold;
+  color: #314F6F;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 20rem;
+  white-space: nowrap;
+}
+
+.panel-body a:hover {
+  background-color: #AABBC9;
 }
 
 /* Navigation */
@@ -68,7 +92,7 @@ nav header a:hover {
   display: -webkit-flex;
   display: flex;
   justify-content: center;
-  background-color: #7777bb;
+  background-color: #93A5BC;
 }
 
 /* Article styles */
@@ -77,12 +101,27 @@ article {
   margin-bottom: 0.5rem;
   padding: 0 1rem 0.5rem 1rem;
   border: 1px solid #E9EDF2;
+  transition: opacity 0.15s;
 }
 
 article h2 {
-  font-size: 1.2em;
-  padding-top: 0.5em;
-  margin: 0;
+  padding: 0;
+  margin: 0.2em 0 0.2em 0;
+}
+
+article header a {
+  font-size: 0.8em;
+  color: #284A66;
+  text-decoration: none;
+}
+
+article header a:hover {
+  color: #0B1B27;
+  text-decoration: underline;
+}
+
+article.read {
+  display: none;
 }
 
 #entries_panel {

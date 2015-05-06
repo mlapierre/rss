@@ -22,5 +22,12 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
     $scope.activateArticle = function($index) {
       $scope.selectedIndex = $index;
     }
+
+    $scope.isRead = function($index) {
+      if ($scope.entries[$index].read_at === null) {
+        return false;
+      }
+      return true;
+    }
   }
 ]);
