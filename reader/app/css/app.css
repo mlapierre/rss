@@ -2,7 +2,7 @@
   display: -webkit-flex;
   display: flex;
   justify-content: center;
-  background-color: #D8E0E6;
+  background-color: #EEEEEE;
 }
 
 .container {
@@ -11,6 +11,18 @@
   width: 100%;
   max-width: 1200px;
   background-color: #C5CFDC;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: #dddddd;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #aaaaaa;
 }
 
 /* Feeds list */
@@ -37,12 +49,12 @@
 
 .panel-title {
   margin: 0;
-  padding:0;
+  padding: 0;
   padding-top: 1rem;
 }
 
 .panel-body {
-  height: 86vh;
+  height: 100%;
   line-height: 1em;
 }
 
@@ -121,7 +133,7 @@ article header a:hover {
 }
 
 article.read {
-  display: none;
+  opacity: 0.5;
 }
 
 #entries_panel {

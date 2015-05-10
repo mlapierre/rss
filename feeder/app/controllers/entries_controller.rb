@@ -1,5 +1,5 @@
 class EntriesController < ApplicationController
-  before_action :set_feed, only: [:show, :edit, :update, :destroy]
+  before_action :set_entry, only: [:show, :edit, :update, :destroy]
 
   # GET /entries
   # GET /entries.json
@@ -17,27 +17,47 @@ class EntriesController < ApplicationController
     @entry = Entry.new
   end
 
-  # GET /feeds/1/edit
+  # GET /entries/1/edit
   def edit
   end
 
-  # GET /feeds/add
+  # GET /entries/add
   def add
 
   end
 
-  # POST /feeds
-  # POST /feeds.json
+  # POST /entries
+  # POST /entries.json
   def create
+    @entry = Entry.new(entry_params)
+
+    respond_to do |format|
+      if @entry.save
+        format.html { redirect_to @entry, notice: 'Entry was successfully created.' }
+        format.json { render :show, status: :created, location: @entry }
+      else
+        format.html { render :new }
+        format.json { render json: @entry.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
-  # PATCH/PUT /feeds/1
-  # PATCH/PUT /feeds/1.json
+  # PATCH/PUT /entries/1
+  # PATCH/PUT /entries/1.json
   def update
+    respond_to do |format|
+      if @entry.update(entry_params)
+        format.html { redirect_to @entry, notice: 'Entry was successfully updated.' }
+        format.json { render :show, status: :ok, location: @entry }
+      else
+        format.html { render :edit }
+        format.json { render json: @entry.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
-  # DELETE /feeds/1
-  # DELETE /feeds/1.json
+  # DELETE /entries/1
+  # DELETE /entries/1.json
   def destroy
   end
 
@@ -48,7 +68,17 @@ class EntriesController < ApplicationController
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    def feed_params
-      params.require(:feed).permit(:feed_link, :source_link, :title, :description, :updated, :subtitle, :icon)
+    def entry_params
+      params.require(:entry).permit(:url, 
+                                    :source_link, 
+                                    :title, 
+                                    :author, 
+                                    :updated, 
+                                    :published, 
+                                    :content, 
+                                    :summary, 
+                                    :image,
+                                    :feed_id,
+                                    :read_at)
     end
 end

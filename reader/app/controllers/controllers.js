@@ -1,11 +1,11 @@
-angular.module('readerAppControllers', [])
+angular.module('readerAppControllers', ['duScroll'])
 
 .controller('feedsPanelCtrl', ['$scope', 'Feed', function($scope, Feed) {
   $scope.feeds = Feed.query();
   $scope.items = ['Item 1', 'Item 2', 'Item 3'];
 }])
 
-.controller('mainCtrl', function ($scope, $document) {
+.controller('mainCtrl', ['$scope', '$document', 'Entry', function($scope, $document, Entry) {
   var keyHanders = {
     'n': handleNextArticle,
     'p': handlePrevArticle,
@@ -15,14 +15,13 @@ angular.module('readerAppControllers', [])
   function handleNextArticle() {
     var entries_scope = angular.element($('#entries_view')).scope();
     
-    setTimeout(function(entry) {
-      toggleArticleRead(entry);
-    }(entries_scope.entries[entries_scope.selectedIndex]), 100);
+    toggleArticleRead(entries_scope, true);
 
     if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
       entries_scope.selectedIndex++;
       entries_scope.$apply();
     }
+    scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
   }
 
   function handlePrevArticle() {
@@ -33,25 +32,24 @@ angular.module('readerAppControllers', [])
       entries_scope.selectedIndex--;
     }
     entries_scope.$apply();
+    scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
   }
 
   function handleToggleArticleRead() {
     var entries_scope = angular.element($('#entries_view')).scope();
-    var now = new Date(Date.now());
-    entries_scope.entries[entries_scope.selectedIndex].read_at = now.toISOString();
-    console.log('#article_' + entries_scope.entries[entries_scope.selectedIndex].id + ' read at:', entries_scope.entries[entries_scope.selectedIndex].read_at);
+    
+    toggleArticleRead(entries_scope);
 
-    $('#article_' + entries_scope.entries[entries_scope.selectedIndex].id).css('opacity', 0);
 
-    if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
-      entries_scope.selectedIndex++;
-    } else {
-      entries_scope.selectedIndex = getLastVisibleEntry(entries_scope);
-    }
+    // if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
+    //   entries_scope.selectedIndex++;
+    // } else {
+    //   entries_scope.selectedIndex = getLastVisibleEntry(entries_scope);
+    // }
 
-    setTimeout(function() {
+    // setTimeout(function() {
       entries_scope.$apply();
-    }, 250);
+    // }, 250);
   }
 
   function getLastVisibleEntry(scope) {
@@ -64,13 +62,27 @@ angular.module('readerAppControllers', [])
     return last;
   }
 
-  function toggleArticleRead(entry) {
+  function scrollToEntry(entry_id) {
     var entries_scope = angular.element($('#entries_view')).scope();
-    var now = new Date(Date.now());
-    entry.read_at = now.toISOString();
-    console.log('#article_' + entry.id +' read at:', entry.read_at);
+    var article_id = '#article_' + entry_id;
+    var article_elm = angular.element($(article_id));
+    angular.element($('#entries_panel')).scrollToElement(article_elm, 7, 150);
+  }
 
-    $('#article_' + entry.id).css('opacity', 0);
+  function toggleArticleRead(entries_scope, always_mark_read) {
+    always_mark_read = always_mark_read || false;
+    var entry = entries_scope.entries[entries_scope.selectedIndex];
+    if (always_mark_read || entry.read_at == null) {
+      var now = new Date(Date.now());
+      entry.read_at = now.toISOString();
+      console.log('#article_' + entry.id +' read at:', entry.read_at);
+    } else {
+      entry.read_at = null;
+      console.log('#article_' + entry.id +' not read');
+    }
+    Entry.update({id: entry.id}, entry);
+
+    //$('#article_' + entry.id).css('opacity', 0);
 
     //setTimeout(entries_scope.$apply, 200);
   }
@@ -98,4 +110,4 @@ angular.module('readerAppControllers', [])
   }
 
   $document.on('keypress', keypressHandler);
-});
+}]);

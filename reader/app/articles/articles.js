@@ -13,10 +13,10 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
   });  
 }])
 
-.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Entry', 
-  function($scope, $routeParams, Entry) {
+.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Entries', 
+  function($scope, $routeParams, Entries) {
     $scope.feedId = $routeParams.feedId;
-    $scope.entries = Entry.query({feedId: $routeParams.feedId, isArray:true});
+    $scope.entries = Entries.query({id: $routeParams.feedId, isArray:true});
     
     $scope.selectedIndex = 0;
     $scope.activateArticle = function($index) {

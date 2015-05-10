@@ -5,6 +5,7 @@ angular.module('readerApp', [
   'ngSanitize',
   'ui.bootstrap',
   'appConfig',
+  'duScroll',
   'readerApp.articles',
   'readerApp.view2',
   'readerApp.version',

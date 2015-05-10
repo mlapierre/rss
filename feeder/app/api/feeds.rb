@@ -26,14 +26,6 @@
         # "Add a feed"
         # "Delete a feed"
 
-        desc "Return unread entries for a feed"
-        params do
-          requires :feed_id, type: Integer, desc: "Feed id."
-        end
-        get 'entries/:feed_id' do
-          Entry.where(feed_id: params[:feed_id]).take(10)
-        end
-
       end
     end
   end
