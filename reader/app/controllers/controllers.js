@@ -14,7 +14,6 @@ angular.module('readerAppControllers', ['duScroll'])
   
   function handleNextArticle() {
     var entries_scope = angular.element($('#entries_view')).scope();
-    
     toggleArticleRead(entries_scope, true);
 
     if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
@@ -36,20 +35,8 @@ angular.module('readerAppControllers', ['duScroll'])
   }
 
   function handleToggleArticleRead() {
-    var entries_scope = angular.element($('#entries_view')).scope();
-    
-    toggleArticleRead(entries_scope);
-
-
-    // if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
-    //   entries_scope.selectedIndex++;
-    // } else {
-    //   entries_scope.selectedIndex = getLastVisibleEntry(entries_scope);
-    // }
-
-    // setTimeout(function() {
-      entries_scope.$apply();
-    // }, 250);
+    toggleArticleRead(angular.element($('#entries_view')).scope());
+    entries_scope.$apply();
   }
 
   function getLastVisibleEntry(scope) {
@@ -75,16 +62,10 @@ angular.module('readerAppControllers', ['duScroll'])
     if (always_mark_read || entry.read_at == null) {
       var now = new Date(Date.now());
       entry.read_at = now.toISOString();
-      console.log('#article_' + entry.id +' read at:', entry.read_at);
     } else {
       entry.read_at = null;
-      console.log('#article_' + entry.id +' not read');
     }
     Entry.update({id: entry.id}, entry);
-
-    //$('#article_' + entry.id).css('opacity', 0);
-
-    //setTimeout(entries_scope.$apply, 200);
   }
 
   function processKeypress(key) {
