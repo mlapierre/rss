@@ -7,6 +7,25 @@ module FeedsHelper
 
   mattr_accessor :log
 
+  def self.add(link)
+    if Feed.find_by(feed_link: link).nil?
+      feed_source = FeedsHelper.fetch_feed_source(link)
+
+      @feed = Feed.new
+      @feed.title = feed_source.title
+      @feed.description = feed_source.description
+      @feed.updated = feed_source.last_modified
+
+      @feed.feed_link = feed_source.feed_url #TODO check if the link found in the xml doesn't match the url
+      @feed.source_link = feed_source.url
+
+      if @feed.save
+        EntriesHelper.save_from(feed_source, @feed)
+        @feed
+      end
+    end
+  end
+
   def self.bulk_fetch_and_parse(links)
     Feedjira::Feed.fetch_and_parse links
   end

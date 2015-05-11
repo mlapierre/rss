@@ -1,9 +1,31 @@
 angular.module('readerAppControllers', ['duScroll'])
 
-.controller('feedsPanelCtrl', ['$scope', 'Feed', function($scope, Feed) {
+.controller('feedsPanelCtrl', function($scope, $location, Feed) {
   $scope.feeds = Feed.query();
-  $scope.items = ['Item 1', 'Item 2', 'Item 3'];
-}])
+
+  $scope.feed_url = '';
+  $scope.new_feed = '';
+  $scope.addSubscription = function() {
+    var input_scope = angular.element($('#add_subscription')).scope();
+    if (input_scope.add_feed_form.$valid) {
+      console.log("Valid feed");
+      Feed.save({link: input_scope.feed_url}, function(resp) {
+             feed = JSON.parse(resp.feed);
+             $location.path("#/feed/" + feed.id);
+           });
+
+      $scope.feeds = Feed.query();
+      
+      
+
+      // $scope.new_feed = Feed.save({link: input_scope.feed_url}, function(resp) {
+      //       feed = JSON.parse(resp.feed);
+      //       console.log(feed.id);
+      //       $scope.feeds.push(Feed.get({id: feed.id}));
+      //     });
+    } 
+  }
+})
 
 .controller('mainCtrl', ['$scope', '$document', 'Entry', function($scope, $document, Entry) {
   var keyHanders = {
@@ -35,7 +57,8 @@ angular.module('readerAppControllers', ['duScroll'])
   }
 
   function handleToggleArticleRead() {
-    toggleArticleRead(angular.element($('#entries_view')).scope());
+    var entries_scope = angular.element($('#entries_view')).scope();
+    toggleArticleRead(entries_scope);
     entries_scope.$apply();
   }
 
@@ -71,9 +94,7 @@ angular.module('readerAppControllers', ['duScroll'])
   function processKeypress(key) {
     if (typeof keyHanders[key] === 'function') {
       return keyHanders[key](key);
-    } else {
-      console.log('No hotkey for key: ', key);
-    }
+    } 
   }
 
   function getChar(event) {
@@ -90,5 +111,7 @@ angular.module('readerAppControllers', ['duScroll'])
     processKeypress(getChar(keyEvent));
   }
 
+  //angular.element($('#entries_view')).on('keypress', keypressHandler);
   $document.on('keypress', keypressHandler);
 }]);
+

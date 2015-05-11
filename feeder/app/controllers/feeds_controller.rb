@@ -21,8 +21,9 @@ class FeedsController < ApplicationController
   def edit
   end
 
-  # GET /feeds/add
-  def add
+  # POST /feeds
+  # POST /feeds.json
+  def create
     link = params[:link]
     @feed = Feed.find_by feed_link: link
     if !@feed.nil?
@@ -52,23 +53,7 @@ class FeedsController < ApplicationController
         format.html { render :new }
         format.json { render json: @feed.errors, status: :unprocessable_entity }
       end
-    end
-  end
-
-  # POST /feeds
-  # POST /feeds.json
-  def create
-    @feed = Feed.new(feed_params)
-
-    respond_to do |format|
-      if @feed.save
-        format.html { redirect_to @feed, notice: 'Feed was successfully created.' }
-        format.json { render :show, status: :created, location: @feed }
-      else
-        format.html { render :new }
-        format.json { render json: @feed.errors, status: :unprocessable_entity }
-      end
-    end
+    end  
   end
 
   # PATCH/PUT /feeds/1

@@ -8,6 +8,7 @@ RUN npm install
 RUN npm install -g bower 
 
 COPY bower.json /usr/src/app/
+COPY .bowerrc /usr/src/app/
 RUN bower install --allow-root
 
 COPY . /usr/src/app

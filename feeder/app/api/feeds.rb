@@ -23,8 +23,19 @@
           end
         end
 
-        # "Add a feed"
-        # "Delete a feed"
+        # POST /feeds
+        desc "Add a feed"
+        params do
+          requires :link, type: String, desc: "The URL of the feed to add"
+        end
+        post do
+          feed = FeedsHelper.add(params[:link])
+          if !feed.nil?
+            { status: 'created', feed: feed.to_json }
+          else
+            error!({ error: "Feed already exists"}, 409)
+          end
+        end
 
       end
     end

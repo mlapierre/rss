@@ -74,6 +74,15 @@
   background-color: #AABBC9;
 }
 
+.panel-body input {
+  margin: 0 0 0.5rem 1rem;
+  width: 100%;
+}  
+
+.panel-body input.ng-invalid-url {
+  border: 2px solid red;
+}
+
 /* Navigation */
 nav {
   height: 7vh;
