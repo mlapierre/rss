@@ -52,7 +52,7 @@ gem 'resque'
 # Grape for a simple REST-list DSL
 gem 'grape'
 gem 'grape-rails-routes'
-#gem 'rack-contrib'
+gem 'rack-contrib'
 gem 'rack-cors'
 
 group :test, :development do
