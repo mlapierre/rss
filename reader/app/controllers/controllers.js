@@ -1,6 +1,6 @@
 angular.module('readerAppControllers', ['duScroll'])
 
-.controller('feedsPanelCtrl', function($scope, $location, Feed) {
+.controller('feedsPanelController', function($scope, $location, Feed) {
   $scope.feeds = Feed.query();
 
   $scope.feed_url = '';
@@ -111,7 +111,14 @@ angular.module('readerAppControllers', ['duScroll'])
     processKeypress(getChar(keyEvent));
   }
 
-  //angular.element($('#entries_view')).on('keypress', keypressHandler);
+  var add_feed_input = angular.element($('#add_subscription'));
+  add_feed_input.on('focus', function() {
+    $document.off('keypress');
+  });
+  add_feed_input.on('blur', function() {
+    $document.on('keypress', keypressHandler);
+  });
+
   $document.on('keypress', keypressHandler);
 }]);
 

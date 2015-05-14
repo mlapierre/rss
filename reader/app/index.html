@@ -52,9 +52,9 @@
   <div class="main_wrap">
     <div class="container">
       
-      <div ng-controller="feedsPanelCtrl" id="feeds_panel">
+      <div ng-controller="feedsPanelController" id="feeds_panel">
         
-        <div ui-tree data-drag-delay="120">
+        <div ui-tree data-drag-delay="150">
           <h2>Subscriptions</h2>
           <form name="add_feed_form" ng-submit="addSubscription()">
             <input id="add_subscription" type="url" placeholder="Add subscription..." ng-model="feed_url">
