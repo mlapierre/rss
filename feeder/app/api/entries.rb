@@ -44,7 +44,17 @@ module Entries
       put ':id' do
         supplied_params = declared(params, include_missing: false)
         supplied_params[:updated] = Time.current
-        Entry.find(params[:id]).update(supplied_params)
+        permitted_params = ActionController::Parameters.new(supplied_params).permit(:url, 
+                                                                                    :title, 
+                                                                                    :author, 
+                                                                                    :content, 
+                                                                                    :summary, 
+                                                                                    :image,
+                                                                                    :published,
+                                                                                    :updated,
+                                                                                    :feed_id,
+                                                                                    :read_at)      
+        Entry.find(params[:id]).update(permitted_params)
       end
 
     end

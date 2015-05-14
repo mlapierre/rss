@@ -57,4 +57,7 @@ gem 'rack-cors'
 
 group :test, :development do
   gem 'rspec-rails'
+  gem 'byebug'
+  gem 'pry'
+  gem 'pry-byebug'
 end
