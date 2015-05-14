@@ -1,3 +1,10 @@
+/* fix to make the empty placeholder invisible until the updated version is released and the placeholder can be removed */
+.angular-ui-tree-empty {
+  border: 0;
+  min-height: 0;
+  background:transparent;
+}
+
 .main_wrap {
   display: -webkit-flex;
   display: flex;
@@ -36,29 +43,18 @@
   overflow-y: scroll;
 }
 
-.panel-heading {
-  height: 3rem;
-  align-items: center;
-}
-
-.panel-heading a {
+.angular-ui-tree h2 {
   padding-left: 1rem;
   text-decoration: none;
   color: #305371;
 }
 
-.panel-title {
-  margin: 0;
-  padding: 0;
-  padding-top: 1rem;
-}
-
-.panel-body {
+.angular-ui-tree ol {
   height: 100%;
   line-height: 1em;
 }
 
-.panel-body a {
+.angular-ui-tree-handle a {
   padding: 1px 1em 1px 1em;
   display: inline-block;
   text-decoration: none;
@@ -70,16 +66,16 @@
   white-space: nowrap;
 }
 
-.panel-body a:hover {
+.angular-ui-tree-handle a:hover {
   background-color: #AABBC9;
 }
 
-.panel-body input {
+.angular-ui-tree input {
   margin: 0 0 0.5rem 1rem;
   width: 100%;
 }  
 
-.panel-body input.ng-invalid-url {
+.angular-ui-tree input.ng-invalid-url {
   border: 2px solid red;
 }
 

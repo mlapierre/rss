@@ -4,6 +4,7 @@ angular.module('readerApp', [
   'ngRoute',
   'ngSanitize',
   'ui.bootstrap',
+  'ui.tree',
   'appConfig',
   'duScroll',
   'readerApp.articles',
