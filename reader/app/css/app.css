@@ -32,37 +32,94 @@
   background-color: #aaaaaa;
 }
 
+/* Feeds menu */
+#feeds_menu {
+  padding: 0;
+  margin: 0;
+  list-style: none; 
+  width: 20%;
+  text-align: right;
+}  
+
+#feeds_menu li {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+
+#feeds_menu li a {
+  display: block;
+  text-decoration: none;
+}
+
+#feeds_menu li ul {
+  display: none;
+  position: absolute;
+  z-index: 999;
+  right: 0px;
+  top: 10px;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #CCCCCC;
+}
+
+#feeds_menu li:hover ul {
+  display: block;
+}
+
 /* Feeds list */
 #feeds_panel {
   width: 20rem;
-  padding-right: 2rem;
-  overflow: hidden;
+  height: 93vh;
 }
 
-#feeds_panel:hover {
-  overflow-y: scroll;
+#feeds_panel header {
+  display: -webkit-flex;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width:100%;
+  margin-bottom: 0.5rem;
 }
 
-.angular-ui-tree h2 {
+#feeds_panel h2 {
   padding-left: 1rem;
   text-decoration: none;
   color: #305371;
+  margin: 0.25rem 0 0.25rem 0;
+}
+
+#feeds_header_container {
+  width: 19rem;
+}
+
+#add_subscription {
+  margin: 0 0 0.5rem 1rem;
+  width: 18rem;
+}  
+
+#add_subscription.ng-invalid-url {
+  border: 2px solid red;
 }
 
 .angular-ui-tree ol {
+  overflow: hidden;
   height: 100%;
-  line-height: 1em;
+}
+
+.angular-ui-tree ol:hover {
+  overflow-y: scroll;
 }
 
 .angular-ui-tree-handle a {
-  padding: 1px 1em 1px 1em;
+  padding: 1px 1em 1px 1rem;
   display: inline-block;
   text-decoration: none;
   font-weight: bold;
   color: #314F6F;
   text-overflow: ellipsis;
   overflow: hidden;
-  width: 20rem;
+  width: 18rem;
   white-space: nowrap;
 }
 
@@ -70,13 +127,14 @@
   background-color: #AABBC9;
 }
 
-.angular-ui-tree input {
-  margin: 0 0 0.5rem 1rem;
-  width: 100%;
-}  
-
-.angular-ui-tree input.ng-invalid-url {
-  border: 2px solid red;
+.angular-ui-tree-placeholder {
+  border-bottom: 1px dotted black;
+  padding:0;
+  margin-left: 1rem;
+  height: 5px!important;
+  min-height: 0;
+  line-height: 5px;
+  width:100%;
 }
 
 /* Navigation */

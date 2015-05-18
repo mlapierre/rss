@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   mount Feeds::API => '/'
   mount Pages::API => '/'
   mount Entries::API => '/'
+  mount Tags::API => '/'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

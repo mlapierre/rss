@@ -1,10 +1,11 @@
 angular.module('readerAppControllers', ['duScroll'])
 
-.controller('feedsPanelController', function($scope, $location, Feed) {
+.controller('feedsPanelController', function($scope, $location, Feed, Tag) {
   $scope.feeds = Feed.query();
 
   $scope.feed_url = '';
-  $scope.new_feed = '';
+  $scope.feed_tag = '';
+
   $scope.addSubscription = function() {
     var input_scope = angular.element($('#add_subscription')).scope();
     if (input_scope.add_feed_form.$valid) {
@@ -13,16 +14,20 @@ angular.module('readerAppControllers', ['duScroll'])
              feed = JSON.parse(resp.feed);
              $location.path("#/feed/" + feed.id);
            });
-
       $scope.feeds = Feed.query();
-      
-      
+    } 
+  }
 
-      // $scope.new_feed = Feed.save({link: input_scope.feed_url}, function(resp) {
-      //       feed = JSON.parse(resp.feed);
-      //       console.log(feed.id);
-      //       $scope.feeds.push(Feed.get({id: feed.id}));
-      //     });
+  $scope.addFeedTag = function() {
+    var input_scope = angular.element($('#add_feed_tag')).scope();
+    if (input_scope.add_feed_form.$valid) {
+      console.log("Valid tag: " + $scope.feed_tag);
+      Tag.save({name: input_scope.feed_tag});
+      // Feed.save({link: input_scope.feed_url}, function(resp) {
+      //        feed = JSON.parse(resp.feed);
+      //        $location.path("#/feed/" + feed.id);
+      //      });
+
     } 
   }
 })

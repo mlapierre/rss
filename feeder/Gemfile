@@ -60,4 +60,6 @@ group :test, :development do
   gem 'byebug'
   gem 'pry'
   gem 'pry-byebug'
+  gem 'guard'
+  gem 'guard-shell'
 end

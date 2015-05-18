@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'byebug'
 
 describe Entries::API do 
   describe "GET /entries/:id" do

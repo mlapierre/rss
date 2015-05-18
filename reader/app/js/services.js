@@ -12,4 +12,9 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   return $resource('http://' + settings.apiAddr + ':' + settings.apiPort + '/entries/:id', {}, {
     update: {method:'PUT'}
   });
-});  
+})  
+
+.factory('Tag', function($resource, settings) {
+  return $resource('http://' + settings.apiAddr + ':' + settings.apiPort + '/tags/:id');
+});
+

@@ -11,7 +11,8 @@
     "http-server": "^0.6.1",
     "bower": "^1.3.1",
     "shelljs": "^0.2.6",
-    "karma-junit-reporter": "^0.2.2"
+    "karma-junit-reporter": "^0.2.2",
+    "watch-run": "1.x"
   },
   "scripts": {
     "postinstall": "bower install",
@@ -19,6 +20,7 @@
     "prestart": "npm install",
     "init-config": "node scripts/initconfig.js",
     "start": "npm run init-config && http-server -a 0.0.0.0 -p 8000 -c-1",
+    "watch-code": "watch-run -p '/code/**/*' 'cp -r /code/* ./'",
 
     "pretest": "npm install",
     "test": "karma start karma.conf.js",
