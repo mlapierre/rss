@@ -2,6 +2,7 @@ angular.module('readerAppControllers', ['duScroll'])
 
 .controller('feedsPanelController', function($scope, $location, Feed, Tag) {
   $scope.feeds = Feed.query();
+  $scope.tags = Tag.query();
 
   $scope.feed_url = '';
   $scope.feed_tag = '';

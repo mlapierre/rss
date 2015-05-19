@@ -65,6 +65,9 @@
                       <input id="add_feed_tag" type="text" placeholder="Add new tag..." ng-model="feed_tag">
                     </form>
                   </li>
+                  <li ng-repeat="tag in tags">
+                    <span id="tag_{{tag.id}}">{{tag.name}}</span>
+                  </li>
                 </ul>
               </li>
             </ul>
