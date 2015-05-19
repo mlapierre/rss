@@ -40,6 +40,10 @@ module FeedsHelper
     feed_source
   end
 
+  def self.getTagsAndFeeds
+    feed_tags = Tag.all
+  end
+
   def self.import_opml_from(file)
     log.debug "Reading opml content from file"
     content = File.open(file).readlines.each { |x| x.strip! }.join("\n")
@@ -78,6 +82,22 @@ module FeedsHelper
       if feed.save
         log.debug "Saving feed entries..."
         EntriesHelper.save_from(feed_source, feed)      
+      end
+    end
+  end
+
+  def self.tagFeed(feed_id, tag_name_or_id)
+    feed = Feed.find_by_id feed_id
+    if !feed.nil?
+      tag = Tag.find_by_id(tag_name_or_id) || Tag.find_by(name: tag_name_or_id)
+      if !tag.nil?
+        feed_tags = UserFeedTag.new
+
+        feed_tags.feed_id = feed_id
+        feed_tags.tag_id = tag.id
+        if feed_tags.save
+          feed_tags
+        end
       end
     end
   end

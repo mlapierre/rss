@@ -6,6 +6,12 @@
 
       resource :tags do
 
+        # GET /tags
+        desc "Return all feeds"
+        get do
+          Tag.all
+        end
+
         # POST /tags
         desc "Add a feed tag"
         params do

@@ -77,4 +77,12 @@ RSpec.describe FeedsHelper, :type => :helper do
 
   end
 
+  context "tags" do
+
+    it "Fetches feeds and their tags" do
+      feed_tags = FeedsHelper.getTagsAndFeeds
+    end
+
+  end
+
 end

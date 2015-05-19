@@ -13,6 +13,16 @@
           Feed.all
         end
 
+        # GET /feeds/tags
+        desc "Return all feeds and their tags"
+        get "tags" do
+            feed_tags = FeedsHelper.getTagsAndFeeds
+            if !feed_tags.nil?
+              feed_tags.to_json
+            end
+        end
+
+        # GET /feeds/:id
         desc "Return a feed"
         params do
           requires :id, type: Integer, desc: "Feed id."
@@ -37,19 +47,17 @@
           end
         end
 
-        # POST /feeds/:feed_id/tags
+        # PATCH /feeds/:feed_id
         desc "Add a feed tag"
         params do
           requires :feed_id, type: Integer, desc: "Feed id"
-          requires :name, type: String, desc: "The new tag"
+          requires :tag_name_or_id, type: String, desc: "The tag name or id"
         end
-        post do
-          tag = TagsHelper.add(params[:name])
-          if !tag.nil?
-            { status: 'created', tag: tag.to_json }
-          else
-            error!({ error: "Tag already exists"}, 409)
-          end
+        patch ':feed_id' do
+          tag = FeedsHelper.tagFeed(params[:feed_id], params[:tag_name_or_id])
+          # if !tag.nil?
+          #   tag
+          # end
         end
 
       end
