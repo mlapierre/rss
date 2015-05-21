@@ -25,6 +25,17 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       $scope.selectedIndex = $index;
     }
 
+    $scope.getContent = function(entry) {
+      if (!entry.content) {
+        return entry.summary;
+      } else if (!entry.summary) {
+        return entry.content;
+      } else if (entry.content.length > entry.summary.length ) {
+        return entry.content;
+      }
+      return entry.summary;
+    }
+
     $scope.isRead = function($index) {
       if ($scope.entries[$index].read_at === null) {
         return false;

@@ -4,6 +4,6 @@
     <header>
       <h2><a href="{{entry.url}}" target="_blank">{{entry.title}}</a></h2>
     </header>
-    <section class="article_summary" ng-bind-html="entry.summary" />
+    <section class="article_content" ng-bind-html="getContent(entry)" />
   </article>
 </div>

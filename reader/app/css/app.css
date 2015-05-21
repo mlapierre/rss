@@ -71,6 +71,11 @@
 #feeds_panel {
   width: 20rem;
   height: 93vh;
+  overflow: hidden;
+}
+
+#feeds_panel:hover {
+  overflow-y: scroll;
 }
 
 #feeds_panel header {
@@ -100,15 +105,6 @@
 
 #add_subscription.ng-invalid-url {
   border: 2px solid red;
-}
-
-.angular-ui-tree ol {
-  overflow: hidden;
-  height: 100%;
-}
-
-.angular-ui-tree ol:hover {
-  overflow-y: scroll;
 }
 
 .angular-ui-tree-handle a {

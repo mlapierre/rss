@@ -69,7 +69,7 @@ angular.module('readerAppControllers', ['duScroll'])
   
   function handleNextArticle() {
     var entries_scope = angular.element($('#entries_view')).scope();
-    toggleArticleRead(entries_scope, true);
+    markSelectedArticleRead(entries_scope);
 
     if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
       entries_scope.selectedIndex++;
@@ -87,6 +87,7 @@ angular.module('readerAppControllers', ['duScroll'])
     }
     entries_scope.$apply();
     scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
+    markSelectedArticleUnread(entries_scope);
   }
 
   function handleToggleArticleRead() {
@@ -105,6 +106,19 @@ angular.module('readerAppControllers', ['duScroll'])
     return last;
   }
 
+  function markSelectedArticleRead(entries_scope) {
+    var entry = entries_scope.entries[entries_scope.selectedIndex];
+    var now = new Date(Date.now());
+    entry.read_at = now.toISOString();
+    Entry.update({id: entry.id}, entry);
+  }
+
+  function markSelectedArticleUnread(entries_scope) {
+    var entry = entries_scope.entries[entries_scope.selectedIndex];
+    entry.read_at = null;
+    Entry.update({id: entry.id}, entry);
+  }
+
   function scrollToEntry(entry_id) {
     var entries_scope = angular.element($('#entries_view')).scope();
     var article_id = '#article_' + entry_id;
@@ -112,10 +126,9 @@ angular.module('readerAppControllers', ['duScroll'])
     angular.element($('#entries_panel')).scrollToElement(article_elm, 7, 150);
   }
 
-  function toggleArticleRead(entries_scope, always_mark_read) {
-    always_mark_read = always_mark_read || false;
+  function toggleArticleRead(entries_scope) {
     var entry = entries_scope.entries[entries_scope.selectedIndex];
-    if (always_mark_read || entry.read_at == null) {
+    if (entry.read_at == null) {
       var now = new Date(Date.now());
       entry.read_at = now.toISOString();
     } else {

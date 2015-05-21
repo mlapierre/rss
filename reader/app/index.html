@@ -77,7 +77,7 @@
           </form>
         </div>
 
-        <div ui-tree="treeCallback" data-drag-delay="150">
+        <div id="feeds_tree" ui-tree="treeCallback" data-drag-delay="150">
           <ol ui-tree-nodes ng-model="feeds" data-type="tag">
             <li ng-repeat="tag in feeds" ui-tree-node>
               <span ui-tree-handle id="tag_{{tag.id}}">{{tag.name}}</span>
