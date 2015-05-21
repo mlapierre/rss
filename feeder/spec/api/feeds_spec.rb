@@ -13,4 +13,12 @@ describe Feeds::API do
     end
   end
 
+  describe "GET /feeds/tags" do
+    it "Returns all feeds and their tags" do
+      #feed_tags = FeedsHelper.getTagsAndFeeds
+      get "/feeds/tags"
+      byebug
+    end
+  end
+
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150518190839) do
+ActiveRecord::Schema.define(version: 20150519205417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,7 +56,8 @@ ActiveRecord::Schema.define(version: 20150518190839) do
   add_index "pages", ["entry_id"], name: "index_pages_on_entry_id", using: :btree
 
   create_table "tags", force: true do |t|
-    t.string "name"
+    t.string  "name"
+    t.integer "order"
   end
 
   create_table "user_feed_tags", force: true do |t|
