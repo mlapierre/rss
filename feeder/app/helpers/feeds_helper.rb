@@ -41,7 +41,11 @@ module FeedsHelper
   end
 
   def self.getTagsAndFeeds
-    feed_tags = Tag.all
+    Tag.all
+  end
+
+  def self.getUntaggedFeeds
+    Feed.includes(:user_feed_tags).where(user_feed_tags: { feed_id: nil })
   end
 
   def self.import_opml_from(file)

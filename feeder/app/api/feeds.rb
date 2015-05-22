@@ -16,9 +16,11 @@
         # GET /feeds/tags
         desc "Return all feeds and their tags"
         get "tags" do
+          # Get all tags
           feed_tags = FeedsHelper.getTagsAndFeeds
           if !feed_tags.nil?
             feed_tags_json = []
+            # For each tag, add all tagged feeds to the response object
             feed_tags.each do |tag|
               tag_json = JSON.parse(tag.to_json)
               if !tag.user_feed_tags.empty?
@@ -33,7 +35,16 @@
                 tag_json["feeds"] = [];
               end
               feed_tags_json.append(tag_json)
-            end  
+            end 
+            # Add untagged feeds
+            feeds = FeedsHelper.getUntaggedFeeds
+            tag = {
+                    "id":-1, 
+                    "name":"untagged", 
+                    "order":9999999,
+                    "feeds": feeds
+                  }
+            feed_tags_json.append(tag)
             JSON.parse(feed_tags_json.to_json)
           end
         end
