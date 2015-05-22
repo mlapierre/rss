@@ -3,7 +3,10 @@
                                                  'read': isRead($index) }"> 
     <header>
       <h2><a href="{{entry.url}}" target="_blank">{{entry.title}}</a></h2>
+      <span>{{entry.published | date:'short'}}</span>
     </header>
-    <section class="article_content" ng-bind-html="getContent(entry)" />
+    <div class="section_wrap">
+      <section class="article_content" ng-bind-html="getContent(entry)" />
+    </div>
   </article>
 </div>
