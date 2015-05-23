@@ -8,7 +8,6 @@ angular.module('readerApp', [
   'appConfig',
   'duScroll',
   'readerApp.articles',
-  'readerApp.view2',
   'readerApp.version',
   'readerAppControllers',
   'readerAppServices'

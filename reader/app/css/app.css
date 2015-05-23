@@ -228,7 +228,7 @@ article header a:hover {
 }
 
 article header span {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   text-align: right;
 }
 
@@ -243,6 +243,7 @@ article .section_wrap {
 }
 
 article section {
+  font-size: 0.95rem;
   margin: auto;
   width: 700px;
   line-height: 1.2;

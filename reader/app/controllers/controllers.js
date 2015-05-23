@@ -4,18 +4,7 @@ angular.module('readerAppControllers', ['duScroll'])
   $scope.feed_url = '';
   $scope.feed_tag = '';
   $scope.tags = Tag.query();
-  $scope.feeds = Feed.query({id: 'tags'}, function(tags) {
-    for (var i = 0; i < tags.length; i++) {
-      if (tags[i].order === undefined) {
-        tags[i].order = i;
-      }
-      for (var j = 0; j < tags[i].feeds.length; j++) {
-        if (tags[i].feeds[j].order === undefined) {
-          tags[i].feeds[j].order = j;
-        }
-      }
-    }
-  });
+  $scope.feeds = Feed.getTagsAndFeeds();
 
   $scope.treeCallback = {
     accept: function(sourceNode, destNodes, destIndex) {
@@ -36,18 +25,15 @@ angular.module('readerAppControllers', ['duScroll'])
         tags[i].feeds[j].order = j;
       }
     }
-    Feed.update({'tags': tags});
+    Feed.updateTags(tags);
   };
 
   $scope.addSubscription = function() {
     var input_scope = angular.element($('#add_subscription')).scope();
     if (input_scope.add_feed_form.$valid) {
       console.log("Valid feed");
-      Feed.save({link: input_scope.feed_url}, function(resp) {
-             feed = JSON.parse(resp.feed);
-             $location.path("#/feed/" + feed.id);
-           });
-      $scope.feeds = Feed.query();
+      Feed.addFeed(input_scope.feed_url);
+      $scope.feeds = Feed.getFeeds();
     } 
   }
 

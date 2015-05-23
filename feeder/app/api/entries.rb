@@ -21,13 +21,30 @@ module Entries
         end
       end
 
+      # GET entries/feed/:feed_id?n=:n&sortBy=:sort_by&order=:order&after=:after
       desc "Return unread entries for a feed"
       params do
         requires :feed_id, type: Integer, desc: "Feed id."
+        optional :n, type: Integer, default: 10, desc: "Number of entries to return"
+        optional :sort_by, type: String, default: "published"
+        optional :order, type: String, default: "desc"
+        optional :after, type: DateTime, default: nil
       end
       get 'feed/:feed_id' do
-        Entry.where(feed_id: params[:feed_id]).take(10)
+        query = Entry.includes(:user_entries)
+                     .where(user_entries: {read_at: nil})
+                     .where(feed_id: params[:feed_id])
+        if params[:after] != nil
+          if params[:order] == "asc"
+            query = query.where("published > ?", params[:after]) 
+          else
+            query = query.where("published < ?", params[:after]) 
+          end
+        end
+        query = query.order(params[:sort_by].to_sym => params[:order].to_sym)
+                     .take(params[:n])
       end
+      #Entry.where("? < ?", "published", DateTime.parse("2015-01-01")).order(published: :desc).take(5)
 
       desc "Update an entry"
       params do
