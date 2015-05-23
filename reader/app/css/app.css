@@ -5,6 +5,10 @@
   background:transparent;
 }
 
+html {
+  line-height: 1;
+}
+
 .main_wrap {
   display: -webkit-flex;
   display: flex;
@@ -50,6 +54,7 @@
 #feeds_menu li a {
   display: block;
   text-decoration: none;
+  padding-right: 0.2rem;
 }
 
 #feeds_menu li ul {
@@ -69,7 +74,7 @@
 
 /* Feeds list */
 #feeds_panel {
-  width: 20rem;
+  width: 15rem;
   height: 93vh;
   overflow: hidden;
 }
@@ -88,6 +93,7 @@
 }
 
 #feeds_panel h2 {
+  font-size: 0.9em;
   padding-left: 1rem;
   text-decoration: none;
   color: #305371;
@@ -95,12 +101,12 @@
 }
 
 #feeds_header_container {
-  width: 19rem;
+  width: 14.5rem;
 }
 
 #add_subscription {
   margin: 0 0 0.5rem 1rem;
-  width: 18rem;
+  width: 13rem;
 }  
 
 #add_subscription.ng-invalid-url {
@@ -108,24 +114,37 @@
 }
 
 #feeds_tree span.angular-ui-tree-handle {
-  padding: 0 1em;
+  padding: 0 1rem;
   background-image: url("images/expand_more_18px.svg");
   background-position: 0px 0px;
+  font-size: 0.75rem;
+}
+
+#feeds_tree li {
+  padding: 0;
 }
 
 #feeds_tree ol ol {
-  margin-top: 10px;
+  margin: 0.5em 0;
+  padding: 0;
+}
+
+.angular-ui-tree-handle, .angular-ui-tree-node {
+  min-height: 1em;
+  line-height: 1.1;
+  padding: 0;
 }
 
 .angular-ui-tree-handle a {
-  padding: 1px 1em 1px 1rem;
+  padding: 0.25rem 1rem;
   display: inline-block;
   text-decoration: none;
+  font-size: 0.75rem;
   font-weight: bold;
   color: #314F6F;
   text-overflow: ellipsis;
   overflow: hidden;
-  width: 18rem;
+  width: 12.5rem;
   white-space: nowrap;
 }
 
@@ -198,7 +217,7 @@ article h2 {
 }
 
 article header a {
-  font-size: 0.75em;
+  font-size: 1rem;
   color: #284A66;
   text-decoration: none;
 }
@@ -209,6 +228,7 @@ article header a:hover {
 }
 
 article header span {
+  font-size: 0.9rem;
   text-align: right;
 }
 
@@ -225,6 +245,7 @@ article .section_wrap {
 article section {
   margin: auto;
   width: 700px;
+  line-height: 1.2;
 }
 
 #entries_panel {
