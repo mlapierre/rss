@@ -6,25 +6,43 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   var resource = $resource(settings.apiBaseURL + 'feeds/:id', {}, {
     update: {method:'PATCH', params: {id: 'tags'}}
   });
+  var _feeds;
+  var current_feed_id;
 
   return {
     getFeeds: function() {
-      return resource.query();
+      return _feeds || resource.query(function(feeds) {
+        _feeds = feeds;
+      });
     },
 
     getTagsAndFeeds: function() {
       return resource.query({id: 'tags'}, function(tags) {
+        _feeds = [];
         for (var i = 0; i < tags.length; i++) {
           if (tags[i].order === undefined) {
             tags[i].order = i;
           }
           for (var j = 0; j < tags[i].feeds.length; j++) {
+            _feeds.push(tags[i].feeds[j]);
             if (tags[i].feeds[j].order === undefined) {
               tags[i].feeds[j].order = j;
             }
           }
         }
       });
+    },
+
+    setCurrentFeed: function(feed_id) {
+      current_feed_id = feed_id;
+    },
+
+    getCurrentFeed: function() {
+      for (var i=0; i<_feeds.length; i++) {
+        if (_feeds[i].id == current_feed_id) {
+          return _feeds[i];
+        }
+      }
     },
 
     updateTags: function(tags) {
@@ -41,7 +59,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   };
 })
 
-.factory('Entries', function($resource, settings) {
+.factory('Entries', function($resource, $rootScope, settings, Feed) {
   var resource = $resource(settings.apiBaseURL + 'entries/feed/:id');
   var _entries = [];
   var _feed_id;
@@ -53,7 +71,10 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 
     getFromFeed: function (feed_id) {
       _feed_id = feed_id;
-      _entries = resource.query({id: _feed_id, isArray: true});
+      _entries = resource.query({id: _feed_id, isArray: true}, function() {
+        Feed.setCurrentFeed(_feed_id);
+        $rootScope.$broadcast('feedSelected');
+      });
       return _entries;
     },
 

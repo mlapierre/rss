@@ -164,7 +164,7 @@ html {
 
 /* Navigation */
 nav {
-  height: 7vh;
+  height: 3em;
   display: -webkit-flex;
   display: flex;
   color: #eeeeee;  
@@ -173,8 +173,12 @@ nav {
   align-items: center;
 }
 
+nav header {
+  width: 15rem;
+}
+
 nav header h1 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin: 0 0 0 1rem;
 }
 
@@ -186,6 +190,10 @@ nav header a {
 nav header a:hover {
   text-decoration: none;
   color: #CCC9E0;
+}
+
+nav #feed_title {
+  margin-left: 1rem;
 }
 
 .nav_wrap {
