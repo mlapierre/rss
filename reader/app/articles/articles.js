@@ -13,16 +13,20 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
   });  
 }])
 
-.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Entries', 
+.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Entries',
   function($scope, $routeParams, Entries) {
     if ($routeParams.feedId) {
       $scope.feedId = $routeParams.feedId;
-      $scope.entries = Entries.query({id: $routeParams.feedId, isArray:true});
+      $scope.entries = Entries.getFromFeed($routeParams.feedId);
     }
     
     $scope.selectedIndex = 0;
+
     $scope.activateArticle = function($index) {
       $scope.selectedIndex = $index;
+
+      // If the selected article is near the end, fetch more and remove the excess at the top
+      Entries.fetchAndTrimIfNeeded($index);
     }
 
     $scope.getContent = function(entry) {
@@ -37,7 +41,7 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
     }
 
     $scope.isRead = function($index) {
-      if ($scope.entries[$index].read_at === null) {
+      if ($scope.entries[$index].read_at === null || $scope.entries[$index].read_at === undefined) {
         return false;
       }
       return true;

@@ -10,7 +10,7 @@ angular.module('readerAppControllers', ['duScroll'])
     accept: function(sourceNode, destNodes, destIndex) {
       var sourcetype = sourceNode.$parent.$element.attr('data-type');
       var destType = destNodes.$element.attr('data-type');
-      return (sourcetype === destType); // only accept the same type
+      return (sourcetype === destType); 
     },    
     dropped: function(event) {
       $scope.saveTags();
@@ -46,111 +46,114 @@ angular.module('readerAppControllers', ['duScroll'])
   }
 })
 
-.controller('mainCtrl', ['$scope', '$document', 'Entry', function($scope, $document, Entry) {
-  var keyHanders = {
-    'n': handleNextArticle,
-    'p': handlePrevArticle,
-    'm': handleToggleArticleRead
-  };
-  
-  function handleNextArticle() {
-    var entries_scope = angular.element($('#entries_view')).scope();
-    markSelectedArticleRead(entries_scope);
+.controller('mainCtrl', ['$scope', '$document', 'Entry', 'Entries', 
+  function($scope, $document, Entry, Entries) {
+    var keyHanders = {
+      'n': handleNextArticle,
+      'p': handlePrevArticle,
+      'm': handleToggleArticleRead
+    };
+    
+    function handleNextArticle() {
+      var entries_scope = angular.element($('#entries_view')).scope();
+      markSelectedArticleRead(entries_scope);
+      if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
+        entries_scope.selectedIndex++;
+        entries_scope.$apply();
+      }
+      Entries.fetchAndTrimIfNeeded(entries_scope.selectedIndex);
+      scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
+    }
 
-    if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
-      entries_scope.selectedIndex++;
+    function handlePrevArticle() {
+      var entries_scope = angular.element($('#entries_view')).scope();
+      if (entries_scope.selectedIndex - 1 < 0) {
+        entries_scope.selectedIndex = 0;
+      } else {
+        entries_scope.selectedIndex--;
+      }
+      entries_scope.$apply();
+      scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
+      markSelectedArticleUnread(entries_scope);
+    }
+
+    function handleToggleArticleRead() {
+      var entries_scope = angular.element($('#entries_view')).scope();
+      toggleArticleRead(entries_scope);
       entries_scope.$apply();
     }
-    scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
-  }
 
-  function handlePrevArticle() {
-    var entries_scope = angular.element($('#entries_view')).scope();
-    if (entries_scope.selectedIndex - 1 < 0) {
-      entries_scope.selectedIndex = 0;
-    } else {
-      entries_scope.selectedIndex--;
+    function getLastVisibleEntry(scope) {
+      var last = scope.$$childHead.$index;
+      scope.entries.forEach(function(v, i) {
+        if ($('#article_' + v.id).is(':visible')) {
+          last = i;
+        }
+      });
+      return last;
     }
-    entries_scope.$apply();
-    scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
-    markSelectedArticleUnread(entries_scope);
-  }
 
-  function handleToggleArticleRead() {
-    var entries_scope = angular.element($('#entries_view')).scope();
-    toggleArticleRead(entries_scope);
-    entries_scope.$apply();
-  }
+    function markSelectedArticleRead(entries_scope) {
+      var entry = entries_scope.entries[entries_scope.selectedIndex];
+      var read_at = (new Date(Date.now())).toISOString();
+      entry.read_at = read_at;
+      Entry.markRead(entry.id, read_at);
+    }
 
-  function getLastVisibleEntry(scope) {
-    var last = scope.$$childHead.$index;
-    scope.entries.forEach(function(v, i) {
-      if ($('#article_' + v.id).is(':visible')) {
-        last = i;
-      }
-    });
-    return last;
-  }
-
-  function markSelectedArticleRead(entries_scope) {
-    var entry = entries_scope.entries[entries_scope.selectedIndex];
-    var now = new Date(Date.now());
-    entry.read_at = now.toISOString();
-    Entry.update({id: entry.id}, entry);
-  }
-
-  function markSelectedArticleUnread(entries_scope) {
-    var entry = entries_scope.entries[entries_scope.selectedIndex];
-    entry.read_at = null;
-    Entry.update({id: entry.id}, entry);
-  }
-
-  function scrollToEntry(entry_id) {
-    var entries_scope = angular.element($('#entries_view')).scope();
-    var article_id = '#article_' + entry_id;
-    var article_elm = angular.element($(article_id));
-    angular.element($('#entries_panel')).scrollToElement(article_elm, 7, 150);
-  }
-
-  function toggleArticleRead(entries_scope) {
-    var entry = entries_scope.entries[entries_scope.selectedIndex];
-    if (entry.read_at == null) {
-      var now = new Date(Date.now());
-      entry.read_at = now.toISOString();
-    } else {
+    function markSelectedArticleUnread(entries_scope) {
+      var entry = entries_scope.entries[entries_scope.selectedIndex];
       entry.read_at = null;
+      Entry.markUnread(entry.id);
     }
-    Entry.update({id: entry.id}, entry);
-  }
 
-  function processKeypress(key) {
-    if (typeof keyHanders[key] === 'function') {
-      return keyHanders[key](key);
-    } 
-  }
-
-  function getChar(event) {
-    if (event.which === null) {
-      return String.fromCharCode(event.keyCode) // IE
-    } else if (event.which !== 0 && event.charCode !== 0) {
-      return String.fromCharCode(event.which)   // the rest
-    } else {
-      return null // special key
+    function scrollToEntry(entry_id) {
+      var entries_scope = angular.element($('#entries_view')).scope();
+      var article_id = '#article_' + entry_id;
+      var article_elm = angular.element($(article_id));
+      angular.element($('#entries_panel')).scrollToElement(article_elm, 7, 150);
     }
-  }
 
-  function keypressHandler(keyEvent) {
-    processKeypress(getChar(keyEvent));
-  }
+    function toggleArticleRead(entries_scope) {
+      var entry = entries_scope.entries[entries_scope.selectedIndex];
+      if (entry.read_at == null) {
+        var read_at = (new Date(Date.now())).toISOString();
+        entry.read_at = read_at;
+        Entry.markRead(entry.id, read_at);
+      } else {
+        entry.read_at = null;
+        Entry.markUnread(entry.id);
+      }
+    }
 
-  var add_feed_input = angular.element($('#add_subscription'));
-  add_feed_input.on('focus', function() {
-    $document.off('keypress');
-  });
-  add_feed_input.on('blur', function() {
+    function processKeypress(key) {
+      if (typeof keyHanders[key] === 'function') {
+        return keyHanders[key](key);
+      } 
+    }
+
+    function getChar(event) {
+      if (event.which === null) {
+        return String.fromCharCode(event.keyCode) // IE
+      } else if (event.which !== 0 && event.charCode !== 0) {
+        return String.fromCharCode(event.which)   // the rest
+      } else {
+        return null 
+      }
+    }
+
+    function keypressHandler(keyEvent) {
+      processKeypress(getChar(keyEvent));
+    }
+
+    var add_feed_input = angular.element($('#add_subscription'));
+    add_feed_input.on('focus', function() {
+      $document.off('keypress');
+    });
+    add_feed_input.on('blur', function() {
+      $document.on('keypress', keypressHandler);
+    });
+
     $document.on('keypress', keypressHandler);
-  });
-
-  $document.on('keypress', keypressHandler);
-}]);
+  }
+]);
 
