@@ -5,4 +5,4 @@ angular.module('readerApp.version', [
   'readerApp.version.version-directive'
 ])
 
-.value('version', '0.0.2');
+.value('version', '0.1.0');
