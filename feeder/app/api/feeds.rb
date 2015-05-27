@@ -86,7 +86,7 @@
               tag.save
               if !data_tag.feeds.empty?
                 data_tag[:feeds].each do |data_feed|
-                  user_feed_tag = UserFeedTag.find_by feed_id: data_feed[:id]
+                  user_feed_tag = UserFeedTag.find_or_create_by feed_id: data_feed[:id]
                   user_feed_tag.order = data_feed[:order]
                   user_feed_tag.tag_id = data_tag[:id]
                   user_feed_tag.save
