@@ -35,7 +35,7 @@ angular.module('readerAppControllers', ['duScroll'])
       Feed.addFeed(input_scope.feed_url);
       $scope.feeds = Feed.getFeeds();
     } 
-  }
+  };
 
   $scope.addFeedTag = function() {
     var input_scope = angular.element($('#add_feed_tag')).scope();
@@ -43,11 +43,11 @@ angular.module('readerAppControllers', ['duScroll'])
       console.log("Valid tag: " + $scope.feed_tag);
       Tag.save({name: input_scope.feed_tag});
     } 
-  }
+  };
 })
 
-.controller('mainCtrl', ['$scope', '$document', 'Entry', 'Entries', 
-  function($scope, $document, Entry, Entries) {
+.controller('mainCtrl', ['$scope', '$document', 'Entry', 'Entries', 'Feed',
+  function($scope, $document, Entry, Entries, Feed) {
     var keyHanders = {
       'n': handleNextArticle,
       'p': handlePrevArticle,
@@ -56,7 +56,12 @@ angular.module('readerAppControllers', ['duScroll'])
     
     function handleNextArticle() {
       var entries_scope = angular.element($('#entries_view')).scope();
-      markSelectedArticleRead(entries_scope);
+
+      if (!isRead(entries_scope.entries[entries_scope.selectedIndex])) {
+        Feed.decrementCurrentFeedCount();
+        markSelectedArticleRead(entries_scope);
+      }
+
       if (entries_scope.selectedIndex !== entries_scope.$$childTail.$index) {
         entries_scope.selectedIndex++;
         entries_scope.$apply();
@@ -74,12 +79,26 @@ angular.module('readerAppControllers', ['duScroll'])
       }
       entries_scope.$apply();
       scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
-      markSelectedArticleUnread(entries_scope);
+
+      if (isRead(entries_scope.entries[entries_scope.selectedIndex])) {
+        Feed.incrementCurrentFeedCount();
+        markSelectedArticleUnread(entries_scope);
+      }
     }
 
     function handleToggleArticleRead() {
       var entries_scope = angular.element($('#entries_view')).scope();
-      toggleArticleRead(entries_scope);
+      var entry = entries_scope.entries[entries_scope.selectedIndex];
+      if (entry.read_at == null) {
+        var read_at = (new Date(Date.now())).toISOString();
+        entry.read_at = read_at;
+        Entry.markRead(entry.id, read_at);
+        Feed.decrementCurrentFeedCount();
+      } else {
+        entry.read_at = null;
+        Entry.markUnread(entry.id);
+        Feed.incrementCurrentFeedCount();
+      }
       entries_scope.$apply();
     }
 
@@ -91,6 +110,13 @@ angular.module('readerAppControllers', ['duScroll'])
         }
       });
       return last;
+    }
+
+    function isRead(entry) {
+      if (entry.read_at !== null && entry.read_at !== undefined) {
+        return true;
+      }
+      return false;
     }
 
     function markSelectedArticleRead(entries_scope) {
@@ -111,18 +137,6 @@ angular.module('readerAppControllers', ['duScroll'])
       var article_id = '#article_' + entry_id;
       var article_elm = angular.element($(article_id));
       angular.element($('#entries_panel')).scrollToElement(article_elm, 7, 150);
-    }
-
-    function toggleArticleRead(entries_scope) {
-      var entry = entries_scope.entries[entries_scope.selectedIndex];
-      if (entry.read_at == null) {
-        var read_at = (new Date(Date.now())).toISOString();
-        entry.read_at = read_at;
-        Entry.markRead(entry.id, read_at);
-      } else {
-        entry.read_at = null;
-        Entry.markUnread(entry.id);
-      }
     }
 
     function processKeypress(key) {

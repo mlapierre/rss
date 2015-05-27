@@ -100,6 +100,20 @@ html {
   margin: 0.25rem 0 0.25rem 0;
 }
 
+#feeds_panel .feed_wrap {
+  display: flex;
+  justify-content: space-between;
+}
+
+.feed_wrap span {
+  width: 2rem;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #314F6F;
+  margin-right: 5px;
+  text-align: right;
+}
+
 #feeds_header_container {
   width: 14.5rem;
 }
@@ -132,11 +146,14 @@ html {
 .angular-ui-tree-handle, .angular-ui-tree-node {
   min-height: 1em;
   line-height: 1.1;
-  padding: 0;
+  padding: 5px 0.5rem 5px 1rem;
+}
+
+.angular-ui-tree-handle:hover {
+  background-color: #AABBC9;
 }
 
 .angular-ui-tree-handle a {
-  padding: 0.25rem 1rem;
   display: inline-block;
   text-decoration: none;
   font-size: 0.75rem;
@@ -144,12 +161,12 @@ html {
   color: #314F6F;
   text-overflow: ellipsis;
   overflow: hidden;
-  width: 12.5rem;
+  width: 10.5rem;
   white-space: nowrap;
 }
 
 .angular-ui-tree-handle a:hover {
-  background-color: #AABBC9;
+  
 }
 
 .angular-ui-tree-placeholder {

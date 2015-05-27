@@ -86,8 +86,9 @@
               <span ui-tree-handle id="tag_{{tag.id}}">{{tag.name}}</span>
               <ol ui-tree-nodes ng-model="tag.feeds" data-type="feed">
                 <li ng-repeat="feed in tag.feeds" ui-tree-node>
-                <div ui-tree-handle>
+                <div ui-tree-handle class="feed_wrap">
                   <a href="#/feed/{{feed.id}}" id="feed_{{feed.id}}">{{feed.title}}</a>
+                  <span class="unread_count">{{feed.unread_count}}</span>
                 </div>
                 </li>
               </ol>

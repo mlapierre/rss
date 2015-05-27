@@ -10,6 +10,18 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   var current_feed_id;
 
   return {
+    addFeed: function(link) {
+      resource.save({'link': link}, function(resp) {
+        feed = JSON.parse(resp.feed);
+        $location.path("#/feed/" + feed.id);
+      });
+    },
+
+    decrementCurrentFeedCount: function() {
+      var feed = this.getCurrentFeed();
+      feed.unread_count -= 1;
+    },
+
     getFeeds: function() {
       return _feeds || resource.query(function(feeds) {
         _feeds = feeds;
@@ -24,17 +36,18 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
             tags[i].order = i;
           }
           for (var j = 0; j < tags[i].feeds.length; j++) {
-            _feeds.push(tags[i].feeds[j]);
             if (tags[i].feeds[j].order === undefined) {
               tags[i].feeds[j].order = j;
             }
+            _feeds.push(tags[i].feeds[j]);
           }
         }
       });
     },
 
-    setCurrentFeed: function(feed_id) {
-      current_feed_id = feed_id;
+    incrementCurrentFeedCount: function() {
+      var feed = this.getCurrentFeed();
+      feed.unread_count += 1;
     },
 
     getCurrentFeed: function() {
@@ -45,17 +58,13 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       }
     },
 
-    updateTags: function(tags) {
-      resource.update({'tags': tags});
+    setCurrentFeed: function(feed_id) {
+      current_feed_id = feed_id;
     },
 
-    addFeed: function(link) {
-      resource.save({'link': link}, function(resp) {
-        feed = JSON.parse(resp.feed);
-        $location.path("#/feed/" + feed.id);
-      });
+    updateTags: function(tags) {
+      resource.update({'tags': tags});
     }
-
   };
 })
 

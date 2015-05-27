@@ -29,8 +29,7 @@ module Entries
       get 'feed/:feed_id' do
         last_updated = UserEntry.group(:entry_id).maximum(:updated_at)
         is_read = UserEntry.select(:entry_id).where(entry_id: last_updated.keys, updated_at: last_updated.values).where.not(read_at: nil)
-        query = Entry.includes(:user_entries)
-                     .where.not(id: is_read)
+        query = Entry.where.not(id: is_read)
                      .where(feed_id: params[:feed_id])
         if params[:after] != nil
           if params[:order] == "asc" && params[:sort_by] == "published"
