@@ -3,7 +3,7 @@
    loggers:
    - name: "Feeder"
      outputters:
-     - stdout_debug
+     - stdout_info
      - feeder_logfile
    - name: "Feeder Mechanized"
      outputters:
@@ -13,7 +13,7 @@
    outputters:
     - type        : DateFileOutputter
       name        : feeder_logfile
-      level       : DEBUG
+      level       : INFO
       date_pattern: 'feeder_%Y%m%dT%H'
       default     : true
       trunc       : 'false'
@@ -25,7 +25,7 @@
 
     - type        : DateFileOutputter
       name        : mech_logfile
-      level       : DEBUG
+      level       : INFO
       date_pattern: 'mech_%Y%m%dT%H'
       default     : true
       trunc       : 'false'

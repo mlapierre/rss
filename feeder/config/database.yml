@@ -2,7 +2,7 @@ default: &default
   adapter: postgresql
   pool: 5
   timeout: 5000
-  username: rss
+  username: feeder_master
   password: <%= ENV['POSTGRES_RSS_PASSWORD'] %>
   encoding: utf-8
   host: <%= ENV['PGDB_1_PORT_5432_TCP_ADDR'] %>
@@ -10,7 +10,7 @@ default: &default
 
 development:
   <<: *default
-  database: rss_dev
+  database: feeder_dev
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
