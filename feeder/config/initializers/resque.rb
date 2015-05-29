@@ -10,3 +10,13 @@ FeedsHelper.log = Log4r::Logger["Feeder"]
 EntriesHelper.log = Log4r::Logger["Feeder Mechanized"]
 
 Resque.logger.formatter = Resque::VerboseFormatter.new
+
+Resque.before_fork do
+  defined?(ActiveRecord::Base) and
+    ActiveRecord::Base.connection.disconnect!
+end
+
+Resque.after_fork do
+  defined?(ActiveRecord::Base) and
+    ActiveRecord::Base.establish_connection
+end
