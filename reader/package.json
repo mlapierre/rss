@@ -18,7 +18,7 @@
     "postinstall": "bower install",
 
     "prestart": "npm install",
-    "init-config": "node scripts/initconfig.js",
+    "init-config": "API_ADDR=$(curl http://169.254.169.254/latest/meta-data/public-ipv4) node scripts/initconfig.js",
     "start": "npm run init-config && http-server -a 0.0.0.0 -p 8000 -c-1",
     "watch-code": "watch-run -p '/code/**/*' 'cp -r /code/* ./'",
 
