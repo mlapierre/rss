@@ -22,6 +22,8 @@ html {
   width: 100%;
   max-width: 1400px;
   background-color: #C5CFDC;
+  position: relative;
+  height: calc(100vh - 3em);
 }
 
 *::-webkit-scrollbar-track {
@@ -62,7 +64,7 @@ html {
   position: absolute;
   z-index: 999;
   right: 0px;
-  top: 10px;
+  top: 5px;
   margin: 10px 0;
   padding: 10px;
   background-color: #CCCCCC;
@@ -75,7 +77,6 @@ html {
 /* Feeds list */
 #feeds_panel {
   width: 15rem;
-  height: 93vh;
   overflow: hidden;
 }
 
@@ -230,10 +231,11 @@ article {
 }
 
 article header {
-  display: -webkit-flex;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
 }
 
 article h2 {
@@ -254,7 +256,7 @@ article header a:hover {
 
 article header span {
   font-size: 0.8rem;
-  text-align: right;
+  margin-left: auto;  
 }
 
 article.read {
@@ -262,7 +264,6 @@ article.read {
 }
 
 article .section_wrap {
-  display: -webkit-flex;
   display: flex;  
   justify-content: center;
 }
@@ -275,9 +276,7 @@ article section {
 }
 
 #entries_panel {
-  -webkit-flex: 1;
-          flex: 1;
-  height: 93vh;
+  flex: 1;
   overflow: hidden;
   background-color: #C0CAD8;
 }
