@@ -46,8 +46,8 @@ angular.module('readerAppControllers', ['duScroll'])
   };
 })
 
-.controller('mainCtrl', ['$scope', '$document', 'Entry', 'Entries', 'Feed',
-  function($scope, $document, Entry, Entries, Feed) {
+.controller('mainCtrl', ['$scope', '$document', 'Entry', 'Articles', 'Feed',
+  function($scope, $document, Entry, Articles, Feed) {
     var keyHanders = {
       'n': handleNextArticle,
       'p': handlePrevArticle,
@@ -66,7 +66,7 @@ angular.module('readerAppControllers', ['duScroll'])
         entries_scope.selectedIndex++;
         entries_scope.$apply();
       }
-      Entries.fetchAndTrimIfNeeded(entries_scope.selectedIndex);
+      Articles.fetchAndTrimIfNeeded(entries_scope.selectedIndex);
       scrollToEntry(entries_scope.entries[entries_scope.selectedIndex].id);
     }
 

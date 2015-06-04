@@ -13,11 +13,11 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
   });  
 }])
 
-.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Entries',
-  function($scope, $routeParams, Entries) {
+.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Articles',
+  function($scope, $routeParams, Articles) {
     if ($routeParams.feedId) {
       $scope.feedId = $routeParams.feedId;
-      $scope.entries = Entries.getFromFeed($routeParams.feedId);
+      $scope.articles = Articles.getFromFeed($routeParams.feedId);
     }
     
     $scope.selectedIndex = 0;
@@ -26,22 +26,22 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       $scope.selectedIndex = $index;
 
       // If the selected article is near the end, fetch more and remove the excess at the top
-      Entries.fetchAndTrimIfNeeded($index);
+      Articles.fetchAndTrimIfNeeded($index);
     }
 
-    $scope.getContent = function(entry) {
-      if (!entry.content) {
-        return entry.summary;
-      } else if (!entry.summary) {
-        return entry.content;
-      } else if (entry.content.length > entry.summary.length ) {
-        return entry.content;
+    $scope.getContent = function(article) {
+      if (!article.content) {
+        return article.summary;
+      } else if (!article.summary) {
+        return article.content;
+      } else if (article.content.length > article.summary.length ) {
+        return article.content;
       }
-      return entry.summary;
+      return article.summary;
     }
 
     $scope.isRead = function($index) {
-      if ($scope.entries[$index].read_at === null || $scope.entries[$index].read_at === undefined) {
+      if ($scope.articles[$index].read_at === null || $scope.articles[$index].read_at === undefined) {
         return false;
       }
       return true;

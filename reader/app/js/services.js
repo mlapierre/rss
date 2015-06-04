@@ -68,7 +68,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   };
 })
 
-.factory('Entries', function($resource, $rootScope, settings, Feed) {
+.factory('Articles', function($resource, $rootScope, settings, Feed) {
   var resource = $resource(settings.apiBaseURL + 'entries/feed/:id');
   var _entries = [];
   var _feed_id;
