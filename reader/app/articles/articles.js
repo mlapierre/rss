@@ -13,13 +13,13 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
   });  
 }])
 
-.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Articles',
-  function($scope, $routeParams, Articles) {
+.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Articles', 'Entry',
+  function($scope, $routeParams, Articles, Entry) {
     if ($routeParams.feedId) {
       $scope.feedId = $routeParams.feedId;
       $scope.articles = Articles.getFromFeed($routeParams.feedId);
     }
-    
+    $scope.new_article_tag;
     $scope.selectedIndex = 0;
 
     $scope.activateArticle = function($index) {
@@ -28,6 +28,23 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       // If the selected article is near the end, fetch more and remove the excess at the top
       Articles.fetchAndTrimIfNeeded($index);
     }
+
+    $scope.addArticleTag = function() {
+      var article_id = $scope.articles[$scope.selectedIndex].id;
+      var input_scope = angular.element($('#add_article_tag_' + article_id)).scope();
+      console.log(input_scope);
+      if (input_scope.add_article_tag_form.$valid) {
+        if (!input_scope.article.article_tags) {
+          input_scope.article.article_tags = [];
+        }
+        if (input_scope.article.article_tags.indexOf(input_scope.new_article_tag) >= 0) {
+          return;
+        }
+        input_scope.article.article_tags.push(input_scope.new_article_tag);
+        Entry.addTag(article_id, input_scope.new_article_tag);
+        $('#add_article_tag_' + article_id).val('');
+      } 
+    };
 
     $scope.getContent = function(article) {
       if (!article.content) {
@@ -45,6 +62,15 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
         return false;
       }
       return true;
+    }
+
+    $scope.removeArticleTag = function(event) {
+      var tag = event.target.parentElement.innerText.trim();
+      var article_id = $scope.articles[$scope.selectedIndex].id;
+      var input_scope = angular.element($('#add_article_tag_' + article_id)).scope();
+      var tag_idx = input_scope.article.article_tags.indexOf(tag);
+      input_scope.article.article_tags.splice(tag_idx, 1);
+      Entry.removeTag(article_id, tag);
     }
   }
 ]);

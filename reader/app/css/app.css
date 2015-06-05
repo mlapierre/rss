@@ -275,6 +275,16 @@ article section {
   line-height: 1.2;
 }
 
+article footer form {
+  display: inline-block;
+}
+
+article .article_tag {
+  border: 1px solid grey;
+  margin: 0 0.25em;
+  padding: 2px;
+}
+
 #entries_panel {
   flex: 1;
   overflow: hidden;

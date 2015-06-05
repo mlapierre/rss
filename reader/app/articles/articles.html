@@ -10,9 +10,13 @@
     </div>
 
     <footer>
-      <div class="article_tags" repeat="tag in article.article_tags">
-        <span></span>
-      </div>
+      <form name="add_article_tag_form" ng-submit="addArticleTag()">
+        <input id="add_article_tag_{{article.id}}" type="text" placeholder="New tag..." ng-model="new_article_tag">
+      </form>
+      <span class="article_tag" ng-repeat="tag in article.article_tags">
+        {{tag}}
+        <img src="images/ic_remove_circle_black_18px.svg" ng-click="removeArticleTag($event)" />
+      </span>
     </footer>
   </article>
 </div>

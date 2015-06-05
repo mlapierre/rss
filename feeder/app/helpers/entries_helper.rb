@@ -51,4 +51,9 @@ module EntriesHelper
     uat
   end
 
+  def self.removeTagFromArticle(entry_id, tag_name)
+    uat = UserArticleTag.includes(:article_tag).where(entry_id: entry_id, article_tags: {name: tag_name})
+    uat.first.destroy
+  end
+
 end

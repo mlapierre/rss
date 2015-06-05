@@ -105,6 +105,21 @@ module Entries
         end
       end
 
+      # DELETE entries/:id/tag/:name
+      desc "Remove a tag from an entry"
+      params do
+        requires :id, type: Integer
+        requires :name, type: String
+      end
+      delete ':id/tag/:name' do
+        EntriesHelper.removeTagFromArticle(params[:id], params[:name])
+
+        # if result != 'success'
+        #   error!({ error: result[:response_msg] }, result[:response_code])
+        # end
+        # result
+      end
+
     end
   end
 end
