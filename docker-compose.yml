@@ -3,7 +3,7 @@ api:
   ports:
    - "3000:3000"
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/reader_prototype/feeder:/code
+   - /mnt/mydocs/Dropbox/Dev/rss/master/feeder:/code
   links:
    - pgdb
   env_file:
@@ -17,7 +17,7 @@ pgdb:
   expose:
    - "5432"
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/reader_prototype/feeder_db:/code
+   - /mnt/mydocs/Dropbox/Dev/rss/master/feeder_db:/code
 web:
   build: ./reader
   ports:
@@ -28,4 +28,4 @@ web:
     API_ADDR: boot2docker
     API_PORT: 3000
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/reader_prototype/reader:/code
+   - /mnt/mydocs/Dropbox/Dev/rss/master/reader:/code

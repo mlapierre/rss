@@ -13,38 +13,64 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
   });  
 }])
 
-.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Entries',
-  function($scope, $routeParams, Entries) {
+.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Articles', 'Entry',
+  function($scope, $routeParams, Articles, Entry) {
     if ($routeParams.feedId) {
       $scope.feedId = $routeParams.feedId;
-      $scope.entries = Entries.getFromFeed($routeParams.feedId);
+      $scope.articles = Articles.getFromFeed($routeParams.feedId);
     }
-    
+    $scope.new_article_tag;
     $scope.selectedIndex = 0;
 
     $scope.activateArticle = function($index) {
       $scope.selectedIndex = $index;
 
       // If the selected article is near the end, fetch more and remove the excess at the top
-      Entries.fetchAndTrimIfNeeded($index);
+      Articles.fetchAndTrimIfNeeded($index);
     }
 
-    $scope.getContent = function(entry) {
-      if (!entry.content) {
-        return entry.summary;
-      } else if (!entry.summary) {
-        return entry.content;
-      } else if (entry.content.length > entry.summary.length ) {
-        return entry.content;
+    $scope.addArticleTag = function() {
+      var article_id = $scope.articles[$scope.selectedIndex].id;
+      var input_scope = angular.element($('#add_article_tag_' + article_id)).scope();
+      console.log(input_scope);
+      if (input_scope.add_article_tag_form.$valid) {
+        if (!input_scope.article.article_tags) {
+          input_scope.article.article_tags = [];
+        }
+        if (input_scope.article.article_tags.indexOf(input_scope.new_article_tag) >= 0) {
+          return;
+        }
+        input_scope.article.article_tags.push(input_scope.new_article_tag);
+        Entry.addTag(article_id, input_scope.new_article_tag);
+        $('#add_article_tag_' + article_id).val('');
+      } 
+    };
+
+    $scope.getContent = function(article) {
+      if (!article.content) {
+        return article.summary;
+      } else if (!article.summary) {
+        return article.content;
+      } else if (article.content.length > article.summary.length ) {
+        return article.content;
       }
-      return entry.summary;
+      return article.summary;
     }
 
     $scope.isRead = function($index) {
-      if ($scope.entries[$index].read_at === null || $scope.entries[$index].read_at === undefined) {
+      if ($scope.articles[$index].read_at === null || $scope.articles[$index].read_at === undefined) {
         return false;
       }
       return true;
+    }
+
+    $scope.removeArticleTag = function(event) {
+      var tag = event.target.parentElement.innerText.trim();
+      var article_id = $scope.articles[$scope.selectedIndex].id;
+      var input_scope = angular.element($('#add_article_tag_' + article_id)).scope();
+      var tag_idx = input_scope.article.article_tags.indexOf(tag);
+      input_scope.article.article_tags.splice(tag_idx, 1);
+      Entry.removeTag(article_id, tag);
     }
   }
 ]);

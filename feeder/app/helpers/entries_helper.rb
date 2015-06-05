@@ -32,4 +32,28 @@ module EntriesHelper
     Resque.enqueue(StoreEntryHTMLJob, id, url, title)
   end
 
+  def self.tagArticle(entry_id, tag_name)
+    # If the entry is already tagged with this tag_name, return the user article tag record
+    tag = ArticleTag.includes(:user_article_tags)
+                    .where(user_article_tags: {entry_id: entry_id}, name: tag_name)
+    if tag.size != 0
+      uat = UserArticleTag.find_by entry_id: entry_id, article_tag_id: tag.first.id
+      return { response_status: "tag exists", 
+                 response_code: 409, 
+                  response_msg: %Q{The tag "#{tag_name}" is already applied to that article},
+                           tag: uat }
+    end
+
+    # Otherwise tag it
+    tag = ArticleTag.find_or_create_by name: tag_name
+    uat = UserArticleTag.new entry_id: entry_id, article_tag_id: tag.id
+    uat.save
+    uat
+  end
+
+  def self.removeTagFromArticle(entry_id, tag_name)
+    uat = UserArticleTag.includes(:article_tag).where(entry_id: entry_id, article_tags: {name: tag_name})
+    uat.first.destroy
+  end
+
 end

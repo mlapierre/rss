@@ -11,10 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150526153138) do
+ActiveRecord::Schema.define(version: 20150603181115) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "article_tags", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "entries", force: true do |t|
     t.text     "title"
@@ -59,6 +65,16 @@ ActiveRecord::Schema.define(version: 20150526153138) do
     t.integer "order"
   end
 
+  create_table "user_article_tags", force: true do |t|
+    t.integer  "entry_id"
+    t.integer  "article_tag_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "user_article_tags", ["article_tag_id"], name: "index_user_article_tags_on_article_tag_id", using: :btree
+  add_index "user_article_tags", ["entry_id"], name: "index_user_article_tags_on_entry_id", using: :btree
+
   create_table "user_entries", force: true do |t|
     t.datetime "read_at"
     t.integer  "entry_id"
@@ -66,6 +82,19 @@ ActiveRecord::Schema.define(version: 20150526153138) do
   end
 
   add_index "user_entries", ["entry_id"], name: "index_user_entries_on_entry_id", using: :btree
+
+  create_table "user_entry_events", force: true do |t|
+    t.integer  "entry_id_id"
+    t.integer  "user_event_id_id"
+    t.datetime "occurred_at"
+  end
+
+  add_index "user_entry_events", ["entry_id_id"], name: "index_user_entry_events_on_entry_id_id", using: :btree
+  add_index "user_entry_events", ["user_event_id_id"], name: "index_user_entry_events_on_user_event_id_id", using: :btree
+
+  create_table "user_events", force: true do |t|
+    t.string "event_name"
+  end
 
   create_table "user_feed_tags", force: true do |t|
     t.integer "feed_id"
@@ -75,5 +104,13 @@ ActiveRecord::Schema.define(version: 20150526153138) do
 
   add_index "user_feed_tags", ["feed_id"], name: "index_user_feed_tags_on_feed_id", using: :btree
   add_index "user_feed_tags", ["tag_id"], name: "index_user_feed_tags_on_tag_id", using: :btree
+
+  create_table "users", force: true do |t|
+    t.string   "name"
+    t.string   "pass_hash"
+    t.string   "email"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

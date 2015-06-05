@@ -68,7 +68,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   };
 })
 
-.factory('Entries', function($resource, $rootScope, settings, Feed) {
+.factory('Articles', function($resource, $rootScope, settings, Feed) {
   var resource = $resource(settings.apiBaseURL + 'entries/feed/:id');
   var _entries = [];
   var _feed_id;
@@ -124,17 +124,29 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 })
 
 .factory('Entry', function($resource, settings) {
-  var resource = $resource(settings.apiBaseURL + 'entries/read/:entry_id', 
+  var read_resource = $resource(settings.apiBaseURL + 'entries/read/:entry_id', 
     { entry_id: '@entry_id' }
   );
 
+  var tag_resource = $resource(settings.apiBaseURL + 'entries/:entry_id/tag/:name', 
+    { entry_id: '@entry_id', name: '@name' }
+  );
+
   return {
+    addTag: function(_entry_id, tag_name) {
+      tag_resource.save({entry_id: _entry_id, name: tag_name});
+    },
+
     markRead: function(_entry_id, read_at) {
-      resource.save({entry_id: _entry_id, 'read_at': read_at});
+      read_resource.save({entry_id: _entry_id, 'read_at': read_at});
     },
 
     markUnread: function(_entry_id) {
-      resource.save({entry_id: _entry_id, 'read_at': null});
+      read_resource.save({entry_id: _entry_id, 'read_at': null});
+    },
+
+    removeTag: function(_entry_id, tag_name) {
+      tag_resource.remove({entry_id: _entry_id, name: tag_name});
     }
   };
 })  
