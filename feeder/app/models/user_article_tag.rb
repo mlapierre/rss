@@ -1,4 +1,4 @@
 class UserArticleTag < ActiveRecord::Base
-  belongs_to :user_entries
-  belongs_to :article_tags
+  belongs_to :entry
+  belongs_to :article_tag
 end
