@@ -285,17 +285,17 @@ article .article_tag {
   padding: 2px;
 }
 
-#entries_panel {
+#articles_panel {
   flex: 1;
   overflow: hidden;
   background-color: #C0CAD8;
 }
 
-#entries_panel:hover {
+#articles_panel:hover {
   overflow-y: scroll;
 }
 
-#entries_view {
+#articles_view {
   padding: 1rem;
 }
 
