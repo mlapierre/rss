@@ -1,0 +1,18 @@
+api:
+  build: ./feeder
+  ports:
+   - "3000:3000"
+  volumes:
+   - /home/ec2-user/rss_dev/feeder:/code
+  env_file:
+   - ./feeder/config/.env
+web:
+  build: ./reader
+  ports:
+   - "8000:8000"   
+  links:
+   - api
+  environment:
+    API_PORT: 3000
+  volumes:
+   - /home/ec2-user/rss_dev/reader:/code
