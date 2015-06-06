@@ -29,7 +29,10 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       Hotkeys.assignHotkeyEvents(input_elm);
 
       // If the selected article is near the end, fetch more and remove the excess at the top
+      var old_article_id = $scope.articles[$index].id;
       Articles.fetchAndTrimIfNeeded($index);
+      var article_elm = angular.element($('#article_' + old_article_id));
+      angular.element($('#articles_panel')).scrollToElement(article_elm, 7, 50);
     }
 
     $scope.addArticleTag = function() {

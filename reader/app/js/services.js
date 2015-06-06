@@ -95,9 +95,9 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
           sort_by = "id";
           fetch_after = _entries[_entries.length - 1].id;
         }
+        console.log("Fetching after: " + fetch_after);
         this.fetchMore(5, fetch_after, sort_by);
         this.trim();
-        _entries = this.getEntries();
       }
     },
 
@@ -107,7 +107,8 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
                         isArray: true,
                         n: num,
                         sort_by: sort_by,
-                        after: encodeURIComponent(fetch_after)
+                        after: fetch_after
+                        //after: encodeURIComponent(fetch_after)
                       }, function(entries) {
                            Array.prototype.push.apply(_entries, entries.slice(0, entries.length));
                            console.log("fetched " + entries.length + " more articles");
@@ -180,8 +181,9 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       articles_scope.$apply();
     }
 
+    var old_article_id = articles_scope.articles[articles_scope.selectedIndex].id;
     Articles.fetchAndTrimIfNeeded(articles_scope.selectedIndex);
-    scrollToEntry(articles_scope.articles[articles_scope.selectedIndex].id);
+    scrollToEntry(old_article_id);
 
     var input_elm = angular.element($('#add_article_tag_' + articles_scope.articles[articles_scope.selectedIndex].id));
     assignHotkeyEvents(input_elm);
@@ -252,7 +254,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
     var articles_scope = angular.element($('#articles_view')).scope();
     var article_id = '#article_' + entry_id;
     var article_elm = angular.element($(article_id));
-    angular.element($('#articles_panel')).scrollToElement(article_elm, 7, 150);
+    angular.element($('#articles_panel')).scrollToElement(article_elm, 7, 50);
   }
 
   function getChar(event) {
