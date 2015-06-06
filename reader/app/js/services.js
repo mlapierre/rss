@@ -151,6 +151,135 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   };
 })  
 
+.factory('Hotkeys', function($document, Entry, Articles, Feed) {
+  var keyHanders = {
+    'n': handleNextArticle,
+    'p': handlePrevArticle,
+    'm': handleToggleArticleRead
+  };
+
+  function assignHotkeyEvents(elm) {
+    elm.on('focus', function() {
+      $document.off('keypress');
+    });
+    elm.on('blur', function() {
+      $document.on('keypress', keypressHandler);
+    });      
+  }
+
+  function handleNextArticle() {
+    var articles_scope = angular.element($('#articles_view')).scope();
+
+    if (!isRead(articles_scope.articles[articles_scope.selectedIndex])) {
+      Feed.decrementCurrentFeedCount();
+      markSelectedArticleRead(articles_scope);
+    }
+
+    if (articles_scope.selectedIndex !== articles_scope.$$childTail.$index) {
+      articles_scope.selectedIndex++;
+      articles_scope.$apply();
+    }
+
+    Articles.fetchAndTrimIfNeeded(articles_scope.selectedIndex);
+    scrollToEntry(articles_scope.articles[articles_scope.selectedIndex].id);
+
+    var input_elm = angular.element($('#add_article_tag_' + articles_scope.articles[articles_scope.selectedIndex].id));
+    assignHotkeyEvents(input_elm);
+  }
+
+  function handlePrevArticle() {
+    var articles_scope = angular.element($('#articles_view')).scope();
+    if (articles_scope.selectedIndex - 1 < 0) {
+      articles_scope.selectedIndex = 0;
+    } else {
+      articles_scope.selectedIndex--;
+    }
+    articles_scope.$apply();
+    scrollToEntry(articles_scope.articles[articles_scope.selectedIndex].id);
+
+    if (isRead(articles_scope.articles[articles_scope.selectedIndex])) {
+      Feed.incrementCurrentFeedCount();
+      markSelectedArticleUnread(articles_scope);
+    }
+
+    var input_elm = angular.element($('#add_article_tag_' + articles_scope.articles[articles_scope.selectedIndex].id));
+    assignHotkeyEvents(input_elm);
+  }
+
+  function handleToggleArticleRead() {
+    var articles_scope = angular.element($('#articles_view')).scope();
+    var entry = articles_scope.articles[articles_scope.selectedIndex];
+    if (entry.read_at == null) {
+      var read_at = (new Date(Date.now())).toISOString();
+      entry.read_at = read_at;
+      Entry.markRead(entry.id, read_at);
+      Feed.decrementCurrentFeedCount();
+    } else {
+      entry.read_at = null;
+      Entry.markUnread(entry.id);
+      Feed.incrementCurrentFeedCount();
+    }
+    articles_scope.$apply();
+  }  
+
+  function isRead(entry) {
+    if (entry.read_at !== null && entry.read_at !== undefined) {
+      return true;
+    }
+    return false;
+  }
+
+  function markSelectedArticleRead(articles_scope) {
+    var entry = articles_scope.articles[articles_scope.selectedIndex];
+    var read_at = (new Date(Date.now())).toISOString();
+    entry.read_at = read_at;
+    Entry.markRead(entry.id, read_at);
+  }
+
+  function markSelectedArticleUnread(articles_scope) {
+    var entry = articles_scope.articles[articles_scope.selectedIndex];
+    entry.read_at = null;
+    Entry.markUnread(entry.id);
+  }
+
+  function processKeypress(key) {
+    if (typeof keyHanders[key] === 'function') {
+      return keyHanders[key](key);
+    } 
+  }
+
+  function scrollToEntry(entry_id) {
+    var articles_scope = angular.element($('#articles_view')).scope();
+    var article_id = '#article_' + entry_id;
+    var article_elm = angular.element($(article_id));
+    angular.element($('#articles_panel')).scrollToElement(article_elm, 7, 150);
+  }
+
+  function getChar(event) {
+    if (event.which === null) {
+      return String.fromCharCode(event.keyCode) // IE
+    } else if (event.which !== 0 && event.charCode !== 0) {
+      return String.fromCharCode(event.which)   // the rest
+    } else {
+      return null 
+    }
+  }  
+
+  function keypressHandler(keyEvent) {
+    processKeypress(getChar(keyEvent));
+  }  
+
+  return {
+    init: function() {
+      $document.on('keypress', keypressHandler);
+    },
+
+    assignHotkeyEvents: function(elm) {
+      return assignHotkeyEvents(elm);
+    }
+  }
+})
+
 .factory('Tag', function($resource, settings) {
   return $resource(settings.apiBaseURL + 'tags/:id');
 });

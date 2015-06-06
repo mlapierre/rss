@@ -13,8 +13,8 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
   });  
 }])
 
-.controller('ArticlesCtrl', ['$scope', '$routeParams', 'Articles', 'Entry',
-  function($scope, $routeParams, Articles, Entry) {
+.controller('ArticlesCtrl', ['$document', '$scope', '$routeParams', 'Articles', 'Entry', 'Hotkeys',
+  function($document, $scope, $routeParams, Articles, Entry, Hotkeys) {
     if ($routeParams.feedId) {
       $scope.feedId = $routeParams.feedId;
       $scope.articles = Articles.getFromFeed($routeParams.feedId);
@@ -25,6 +25,9 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
     $scope.activateArticle = function($index) {
       $scope.selectedIndex = $index;
 
+      var input_elm = angular.element($('#add_article_tag_' + $scope.articles[$index].id));
+      Hotkeys.assignHotkeyEvents(input_elm);
+
       // If the selected article is near the end, fetch more and remove the excess at the top
       Articles.fetchAndTrimIfNeeded($index);
     }
@@ -32,7 +35,6 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
     $scope.addArticleTag = function() {
       var article_id = $scope.articles[$scope.selectedIndex].id;
       var input_scope = angular.element($('#add_article_tag_' + article_id)).scope();
-      console.log(input_scope);
       if (input_scope.add_article_tag_form.$valid) {
         if (!input_scope.article.article_tags) {
           input_scope.article.article_tags = [];
