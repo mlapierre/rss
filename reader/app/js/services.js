@@ -17,9 +17,14 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       });
     },
 
+    currentFeedCount: function() {
+      var feed = this.getCurrentFeed();
+      return feed.unread_count;
+    },
+
     decrementCurrentFeedCount: function() {
       var feed = this.getCurrentFeed();
-      feed.unread_count -= 1;
+      feed.unread_count = Math.max(0, feed.unread_count - 1);
     },
 
     getFeeds: function() {
@@ -70,54 +75,43 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 
 .factory('Articles', function($resource, $rootScope, settings, Feed) {
   var resource = $resource(settings.apiBaseURL + 'entries/feed/:id');
-  var _entries = [];
-  var _feed_id;
 
   return {
-    getEntries: function() {
-      return _entries;
-    },
-
     getFromFeed: function (feed_id) {
-      _feed_id = feed_id;
-      _entries = resource.query({id: _feed_id, isArray: true}, function() {
-        Feed.setCurrentFeed(_feed_id);
+      var articles = resource.query({id: feed_id, isArray: true}, function() {
+        Feed.setCurrentFeed(feed_id);
         $rootScope.$broadcast('feedSelected');
       });
-      return _entries;
+      return articles;
     },
 
-    fetchAndTrimIfNeeded: function(index) {
-      if (index > (_entries.length - 6)) {
-        var sort_by = "published";
-        var fetch_after = _entries[_entries.length - 1].published;
-        if (fetch_after === null) {
-          sort_by = "id";
-          fetch_after = _entries[_entries.length - 1].id;
-        }
-        this.fetchMore(5, fetch_after, sort_by);
-        this.trim();
-        _entries = this.getEntries();
+    fetch: function(articles, feed_id, num, fetchCallback) {
+      var sort_by = "published";
+      var fetch_after = articles[articles.length - 1].published;
+      if (fetch_after === null) {
+        sort_by = "id";
+        fetch_after = articles[articles.length - 1].id;
       }
-    },
+      console.log("Fetching after: " + fetch_after);
 
-    fetchMore: function(num, fetch_after, sort_by) {
       resource.query({
-                        id: _feed_id, 
+                        id: feed_id, 
                         isArray: true,
                         n: num,
                         sort_by: sort_by,
-                        after: encodeURIComponent(fetch_after)
-                      }, function(entries) {
-                           Array.prototype.push.apply(_entries, entries.slice(0, entries.length));
-                           console.log("fetched " + entries.length + " more articles");
-                         }
-      );
-    },
+                        after: fetch_after
+                      }, function(fetched_articles) { postQuery(fetched_articles); } );
+      function postQuery(fetched_articles) {
+        Array.prototype.push.apply(articles, fetched_articles.slice(0, fetched_articles.length));
+        console.log("fetched " + fetched_articles.length + " more articles");
 
-    trim: function() {
-      if (_entries.length > 15) {
-        _entries.splice(0, _entries.length - 15);
+        if (articles.length > 15) {
+          articles.splice(0, articles.length - 15);
+        }        
+
+        if (fetchCallback) {
+          fetchCallback();
+        }
       }
     }
   };
@@ -151,7 +145,68 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   };
 })  
 
+.factory('Hotkeys', function($document) {
+  var keyHanders = {
+    'n': handleNextArticle,
+    'p': handlePrevArticle,
+    'm': handleToggleArticleRead
+  };
+
+  function assignHotkeyEvents(elm) {
+    elm.on('focus', function() {
+      $document.off('keypress');
+    });
+    elm.on('blur', function() {
+      $document.on('keypress', keypressHandler);
+    });      
+  }
+
+  function handleNextArticle() {
+    var articles_scope = angular.element($('#articles_view')).scope();
+    articles_scope.selectNext();
+  }
+
+  function handlePrevArticle() {
+    var articles_scope = angular.element($('#articles_view')).scope();
+    articles_scope.selectPrev();
+  }
+
+  function handleToggleArticleRead() {
+    var articles_scope = angular.element($('#articles_view')).scope();
+    articles_scope.toggleRead();
+  }  
+
+  function processKeypress(key) {
+    if (typeof keyHanders[key] === 'function') {
+      return keyHanders[key](key);
+    } 
+  }
+
+  function getChar(event) {
+    if (event.which === null) {
+      return String.fromCharCode(event.keyCode) // IE
+    } else if (event.which !== 0 && event.charCode !== 0) {
+      return String.fromCharCode(event.which)   // the rest
+    } else {
+      return null 
+    }
+  }  
+
+  function keypressHandler(keyEvent) {
+    processKeypress(getChar(keyEvent));
+  }  
+
+  return {
+    init: function() {
+      $document.on('keypress', keypressHandler);
+    },
+
+    assignHotkeyEvents: function(elm) {
+      return assignHotkeyEvents(elm);
+    }
+  }
+})
+
 .factory('Tag', function($resource, settings) {
   return $resource(settings.apiBaseURL + 'tags/:id');
 });
-

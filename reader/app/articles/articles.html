@@ -1,4 +1,4 @@
-<div ng-repeat="article in articles" ng-click="activateArticle($index)">
+<div ng-repeat="article in articles" ng-click="activateArticle($index)" on-finish-render="bindHotkeys">
   <article id="article_{{article.id}}" ng-class="{ 'active_article': $index === selectedIndex, 
                                                  'read': isRead($index) }"> 
     <header>

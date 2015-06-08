@@ -10,6 +10,8 @@ api:
    - ./feeder/config/.env
 pgdb:
   build: ./feeder_db
+  volumes_from:
+   - feeder_data
   ports:
    - "5432:5432"
   expose:

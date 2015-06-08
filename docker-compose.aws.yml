@@ -3,7 +3,7 @@ api:
   ports:
    - "3000:3000"
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/reader_prototype/feeder:/code
+   - /home/ec2-user/rss_dev/feeder:/code
   env_file:
    - ./feeder/config/.env
 web:
@@ -15,4 +15,4 @@ web:
   environment:
     API_PORT: 3000
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/reader_prototype/reader:/code
+   - /home/ec2-user/rss_dev/reader:/code
