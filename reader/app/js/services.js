@@ -17,9 +17,14 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       });
     },
 
+    currentFeedCount: function() {
+      var feed = this.getCurrentFeed();
+      return feed.unread_count;
+    },
+
     decrementCurrentFeedCount: function() {
       var feed = this.getCurrentFeed();
-      feed.unread_count -= 1;
+      feed.unread_count = Math.max(0, feed.unread_count - 1);
     },
 
     getFeeds: function() {
@@ -70,55 +75,43 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 
 .factory('Articles', function($resource, $rootScope, settings, Feed) {
   var resource = $resource(settings.apiBaseURL + 'entries/feed/:id');
-  var _entries = [];
-  var _feed_id;
 
   return {
-    getEntries: function() {
-      return _entries;
-    },
-
     getFromFeed: function (feed_id) {
-      _feed_id = feed_id;
-      _entries = resource.query({id: _feed_id, isArray: true}, function() {
-        Feed.setCurrentFeed(_feed_id);
+      var articles = resource.query({id: feed_id, isArray: true}, function() {
+        Feed.setCurrentFeed(feed_id);
         $rootScope.$broadcast('feedSelected');
       });
-      return _entries;
+      return articles;
     },
 
-    fetchAndTrimIfNeeded: function(index) {
-      if (index > (_entries.length - 6)) {
-        var sort_by = "published";
-        var fetch_after = _entries[_entries.length - 1].published;
-        if (fetch_after === null) {
-          sort_by = "id";
-          fetch_after = _entries[_entries.length - 1].id;
-        }
-        console.log("Fetching after: " + fetch_after);
-        this.fetchMore(5, fetch_after, sort_by);
-        this.trim();
+    fetch: function(articles, feed_id, num, fetchCallback) {
+      var sort_by = "published";
+      var fetch_after = articles[articles.length - 1].published;
+      if (fetch_after === null) {
+        sort_by = "id";
+        fetch_after = articles[articles.length - 1].id;
       }
-    },
+      console.log("Fetching after: " + fetch_after);
 
-    fetchMore: function(num, fetch_after, sort_by) {
       resource.query({
-                        id: _feed_id, 
+                        id: feed_id, 
                         isArray: true,
                         n: num,
                         sort_by: sort_by,
                         after: fetch_after
-                        //after: encodeURIComponent(fetch_after)
-                      }, function(entries) {
-                           Array.prototype.push.apply(_entries, entries.slice(0, entries.length));
-                           console.log("fetched " + entries.length + " more articles");
-                         }
-      );
-    },
+                      }, function(fetched_articles) { postQuery(fetched_articles); } );
+      function postQuery(fetched_articles) {
+        Array.prototype.push.apply(articles, fetched_articles.slice(0, fetched_articles.length));
+        console.log("fetched " + fetched_articles.length + " more articles");
 
-    trim: function() {
-      if (_entries.length > 15) {
-        _entries.splice(0, _entries.length - 15);
+        if (articles.length > 15) {
+          articles.splice(0, articles.length - 15);
+        }        
+
+        if (fetchCallback) {
+          fetchCallback();
+        }
       }
     }
   };
@@ -152,7 +145,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   };
 })  
 
-.factory('Hotkeys', function($document, Entry, Articles, Feed) {
+.factory('Hotkeys', function($document) {
   var keyHanders = {
     'n': handleNextArticle,
     'p': handlePrevArticle,
@@ -170,91 +163,23 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 
   function handleNextArticle() {
     var articles_scope = angular.element($('#articles_view')).scope();
-
-    if (!isRead(articles_scope.articles[articles_scope.selectedIndex])) {
-      Feed.decrementCurrentFeedCount();
-      markSelectedArticleRead(articles_scope);
-    }
-
-    if (articles_scope.selectedIndex !== articles_scope.$$childTail.$index) {
-      articles_scope.selectedIndex++;
-      articles_scope.$apply();
-    }
-
-    var old_article_id = articles_scope.articles[articles_scope.selectedIndex].id;
-    Articles.fetchAndTrimIfNeeded(articles_scope.selectedIndex);
-    scrollToEntry(old_article_id);
-
-    var input_elm = angular.element($('#add_article_tag_' + articles_scope.articles[articles_scope.selectedIndex].id));
-    assignHotkeyEvents(input_elm);
+    articles_scope.selectNext();
   }
 
   function handlePrevArticle() {
     var articles_scope = angular.element($('#articles_view')).scope();
-    if (articles_scope.selectedIndex - 1 < 0) {
-      articles_scope.selectedIndex = 0;
-    } else {
-      articles_scope.selectedIndex--;
-    }
-    articles_scope.$apply();
-    scrollToEntry(articles_scope.articles[articles_scope.selectedIndex].id);
-
-    if (isRead(articles_scope.articles[articles_scope.selectedIndex])) {
-      Feed.incrementCurrentFeedCount();
-      markSelectedArticleUnread(articles_scope);
-    }
-
-    var input_elm = angular.element($('#add_article_tag_' + articles_scope.articles[articles_scope.selectedIndex].id));
-    assignHotkeyEvents(input_elm);
+    articles_scope.selectPrev();
   }
 
   function handleToggleArticleRead() {
     var articles_scope = angular.element($('#articles_view')).scope();
-    var entry = articles_scope.articles[articles_scope.selectedIndex];
-    if (entry.read_at == null) {
-      var read_at = (new Date(Date.now())).toISOString();
-      entry.read_at = read_at;
-      Entry.markRead(entry.id, read_at);
-      Feed.decrementCurrentFeedCount();
-    } else {
-      entry.read_at = null;
-      Entry.markUnread(entry.id);
-      Feed.incrementCurrentFeedCount();
-    }
-    articles_scope.$apply();
+    articles_scope.toggleRead();
   }  
-
-  function isRead(entry) {
-    if (entry.read_at !== null && entry.read_at !== undefined) {
-      return true;
-    }
-    return false;
-  }
-
-  function markSelectedArticleRead(articles_scope) {
-    var entry = articles_scope.articles[articles_scope.selectedIndex];
-    var read_at = (new Date(Date.now())).toISOString();
-    entry.read_at = read_at;
-    Entry.markRead(entry.id, read_at);
-  }
-
-  function markSelectedArticleUnread(articles_scope) {
-    var entry = articles_scope.articles[articles_scope.selectedIndex];
-    entry.read_at = null;
-    Entry.markUnread(entry.id);
-  }
 
   function processKeypress(key) {
     if (typeof keyHanders[key] === 'function') {
       return keyHanders[key](key);
     } 
-  }
-
-  function scrollToEntry(entry_id) {
-    var articles_scope = angular.element($('#articles_view')).scope();
-    var article_id = '#article_' + entry_id;
-    var article_elm = angular.element($(article_id));
-    angular.element($('#articles_panel')).scrollToElement(article_elm, 7, 50);
   }
 
   function getChar(event) {
@@ -285,4 +210,3 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 .factory('Tag', function($resource, settings) {
   return $resource(settings.apiBaseURL + 'tags/:id');
 });
-
