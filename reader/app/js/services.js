@@ -157,6 +157,8 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       $document.off('keypress');
     });
     elm.on('blur', function() {
+      $document.off('keypress'); // unregister so there's only one instance of the event if this
+                                 // function is called more than once
       $document.on('keypress', keypressHandler);
     });      
   }
