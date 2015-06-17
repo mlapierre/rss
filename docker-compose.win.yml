@@ -10,8 +10,6 @@ api:
    - ./feeder/config/.env
 pgdb:
   build: ./feeder_db
-  volumes_from:
-   - feeder_data
   ports:
    - "5432:5432"
   expose:
@@ -21,11 +19,22 @@ pgdb:
 web:
   build: ./reader
   ports:
-   - "8000:8000"   
+   - "8000:8000"
   links:
    - api
+   - couchdb
   environment:
     API_ADDR: boot2docker
     API_PORT: 3000
+    COUCHDB_ADDR: boot2docker
+    COUCHDB_PORT: 5984
   volumes:
    - /mnt/mydocs/Dropbox/Dev/rss/master/reader:/code
+couchdb:
+  build: ./couchdb
+  ports:
+   - "5984:5984"
+  expose:
+   - "5984"
+  volumes:
+   - /mnt/mydocs/Dropbox/Dev/rss/master/couchdb:/code

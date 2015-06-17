@@ -75,6 +75,11 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 
 .factory('Articles', function($resource, $rootScope, settings, Feed) {
   var resource = $resource(settings.apiBaseURL + 'entries/feed/:id');
+  var db = new PouchDB(settings.couchdbBaseURL + 'article_events');
+
+  function getRandString() {
+    return (Math.random()+1).toString(36).slice(2,10);
+  }
 
   return {
     getFromFeed: function (feed_id) {
@@ -95,7 +100,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       console.log("Fetching after: " + fetch_after);
 
       resource.query({
-                        id: feed_id, 
+                        id: feed_id,
                         isArray: true,
                         n: num,
                         sort_by: sort_by,
@@ -107,22 +112,31 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 
         if (articles.length > 15) {
           articles.splice(0, articles.length - 15);
-        }        
+        }
 
         if (fetchCallback) {
           fetchCallback();
         }
       }
+    },
+
+    logEvent: function(event) {
+      event["_id"] = (new Date(Date.now())).toISOString() + '-' + getRandString();
+      db.put(event).then(function (response) {
+
+      }).catch(function (err) {
+        console.log(err);
+      });
     }
   };
 })
 
 .factory('Entry', function($resource, settings) {
-  var read_resource = $resource(settings.apiBaseURL + 'entries/read/:entry_id', 
+  var read_resource = $resource(settings.apiBaseURL + 'entries/read/:entry_id',
     { entry_id: '@entry_id' }
   );
 
-  var tag_resource = $resource(settings.apiBaseURL + 'entries/:entry_id/tag/:name', 
+  var tag_resource = $resource(settings.apiBaseURL + 'entries/:entry_id/tag/:name',
     { entry_id: '@entry_id', name: '@name' }
   );
 
@@ -143,7 +157,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       tag_resource.remove({entry_id: _entry_id, name: tag_name});
     }
   };
-})  
+})
 
 .factory('Hotkeys', function($document) {
   var keyHanders = {
@@ -160,7 +174,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       $document.off('keypress'); // unregister so there's only one instance of the event if this
                                  // function is called more than once
       $document.on('keypress', keypressHandler);
-    });      
+    });
   }
 
   function handleNextArticle() {
@@ -176,12 +190,12 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   function handleToggleArticleRead() {
     var articles_scope = angular.element($('#articles_view')).scope();
     articles_scope.toggleRead();
-  }  
+  }
 
   function processKeypress(key) {
     if (typeof keyHanders[key] === 'function') {
       return keyHanders[key](key);
-    } 
+    }
   }
 
   function getChar(event) {
@@ -190,13 +204,13 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
     } else if (event.which !== 0 && event.charCode !== 0) {
       return String.fromCharCode(event.which)   // the rest
     } else {
-      return null 
+      return null
     }
-  }  
+  }
 
   function keypressHandler(keyEvent) {
     processKeypress(getChar(keyEvent));
-  }  
+  }
 
   return {
     init: function() {

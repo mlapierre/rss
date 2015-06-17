@@ -29,6 +29,7 @@
   <script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap.js"></script>
   <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
   <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script type="text/javascript" src="bower_components/pouchdb/dist/pouchdb.min.js"></script>
   <script type="text/javascript" src="js/app.js"></script>
   <script type="text/javascript" src="js/services.js"></script>
   <script type="text/javascript" src="js/config.js"></script>
@@ -88,7 +89,7 @@
                 <li ng-repeat="feed in tag.feeds" ui-tree-node>
                 <div ui-tree-handle class="feed_wrap">
                   <a href="#/feed/{{feed.id}}" id="feed_{{feed.id}}">{{feed.title}}</a>
-                  <span class="unread_count">{{feed.unread_count}}</span>
+                  <span class="unread_count" ng-hide="{{feed.unread_count}}===0">{{feed.unread_count}}</span>
                 </div>
                 </li>
               </ol>
