@@ -45,13 +45,11 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
 
         var input_elm = angular.element($('#add_article_tag_' + $scope.articles[$index].id));
         Hotkeys.assignHotkeyEvents(input_elm);
-      }
 
-      // If the selected article is near the end, fetch more and remove the excess at the top
-      // var old_article_id = $scope.articles[$index].id;
-      // Articles.fetchAndTrimIfNeeded($index);
-      // var article_elm = angular.element($('#article_' + old_article_id));
-      //angular.element($('#articles_panel')).scrollToElement(article_elm, 7, 50);
+        // If the selected article is near the end, fetch more
+        var selected_article_id = $scope.articles[$scope.selectedIndex].id;
+        fetchArticles(selected_article_id);
+      }
     }
 
     $scope.addArticleTag = function() {
@@ -106,19 +104,7 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       var input_elm = angular.element($('#add_article_tag_' + selected_article_id));
       Hotkeys.assignHotkeyEvents(input_elm);
 
-      var unread_count = Feed.currentFeedCount();
-      if (unread_count > 0
-          && (unread_count - ($scope.$$childTail.$index - $scope.selectedIndex + 1) > 0)
-          && $scope.selectedIndex > ($scope.articles.length - 6)) {
-        Articles.fetch($scope.articles,
-                       $scope.feedId,
-                       Math.min(5, unread_count),
-                       function() {
-                        setSelectedIndex(selected_article_id);
-                        var input_elm = angular.element($('#add_article_tag_' + selected_article_id));
-                        Hotkeys.assignHotkeyEvents(input_elm);
-                       } );
-      }
+      fetchArticles(selected_article_id);
     }
 
     $scope.selectPrev = function() {
@@ -142,18 +128,13 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
     }
 
     $scope.toggleRead = function() {
-      // var entry = articles_scope.articles[articles_scope.selectedIndex];
-      // if (entry.read_at == null) {
-      //   var read_at = (new Date(Date.now())).toISOString();
-      //   entry.read_at = read_at;
-      //   Entry.markRead(entry.id, read_at);
-      //   Feed.decrementCurrentFeedCount();
-      // } else {
-      //   entry.read_at = null;
-      //   Entry.markUnread(entry.id);
-      //   Feed.incrementCurrentFeedCount();
-      // }
-      // articles_scope.$apply();
+      if ($scope.isRead($scope.selectedIndex)) {
+        Feed.incrementCurrentFeedCount();
+        markSelectedArticleUnread();
+      } else {
+        Feed.decrementCurrentFeedCount();
+        markSelectedArticleRead();
+      }
     }
 
     $scope.removeArticleTag = function(event) {
@@ -163,6 +144,22 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       var tag_idx = input_scope.article.article_tags.indexOf(tag);
       input_scope.article.article_tags.splice(tag_idx, 1);
       Entry.removeTag(article_id, tag);
+    }
+
+    function fetchArticles(selected_article_id) {
+      var unread_count = Feed.currentFeedCount();
+      if (unread_count > 0
+          && (unread_count - ($scope.$$childTail.$index - $scope.selectedIndex + 1) > 0)
+          && $scope.selectedIndex > ($scope.articles.length - 6)) {
+        Articles.fetch($scope.articles,
+                       $scope.feedId,
+                       Math.min(5, unread_count),
+                       function() {
+                        setSelectedIndex(selected_article_id);
+                        var input_elm = angular.element($('#add_article_tag_' + selected_article_id));
+                        Hotkeys.assignHotkeyEvents(input_elm);
+                      });
+      }
     }
 
     function logEvent(event) {
