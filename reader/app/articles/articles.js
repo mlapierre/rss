@@ -86,6 +86,15 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       return true;
     }
 
+    $scope.openArticleSource = function(index) {
+      if ($scope.selectedIndex !== index) {
+        logEvent('blur_article');
+        $scope.selectedIndex = index;
+        logEvent('focus_article');
+      }
+      logEvent('open_article_source');
+    }
+
     $scope.selectNext = function() {
       if (!$scope.isRead($scope.selectedIndex)) {
         Feed.decrementCurrentFeedCount();
