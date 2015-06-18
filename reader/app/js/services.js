@@ -81,11 +81,24 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
     return (Math.random()+1).toString(36).slice(2,10);
   }
 
+  function logEvent(event) {
+    event["_id"] = (new Date(Date.now())).toISOString() + '-' + getRandString();
+    db.put(event).then(function (response) {
+
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
+
   return {
     getFromFeed: function (feed_id) {
       var articles = resource.query({id: feed_id, isArray: true}, function() {
         Feed.setCurrentFeed(feed_id);
         $rootScope.$broadcast('feedSelected');
+        logEvent({
+                  "event": "feed_selected",
+                  "feed_id": feed_id
+                 });
       });
       return articles;
     },
@@ -121,12 +134,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
     },
 
     logEvent: function(event) {
-      event["_id"] = (new Date(Date.now())).toISOString() + '-' + getRandString();
-      db.put(event).then(function (response) {
-
-      }).catch(function (err) {
-        console.log(err);
-      });
+      logEvent(event);
     }
   };
 })

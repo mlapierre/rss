@@ -103,7 +103,10 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       }
 
       if ($scope.selectedIndex !== $scope.$$childTail.$index) {
-        logEvent('blur_article');
+        if ($scope.isRead($scope.selectedIndex)) {
+          logEvent('blur_article');
+        }
+
         $scope.selectedIndex++;
         $scope.$apply();
         logEvent('focus_article');
@@ -183,6 +186,7 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
     function hideSelectedArticle() {
       var article_id = '#article_' + $scope.articles[$scope.selectedIndex].id;
       $(article_id).hide();
+      logEvent('blur_article');
     }
 
     function markSelectedArticleRead() {
