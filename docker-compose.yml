@@ -3,7 +3,7 @@ api:
   ports:
    - "3000:3000"
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/master/feeder:/code
+   - /mnt/mydocs/Dropbox/Dev/rss/reader_api/feeder:/code
   links:
    - pgdb
   env_file:
@@ -15,7 +15,7 @@ pgdb:
   expose:
    - "5432"
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/master/feeder_db:/code
+   - /mnt/mydocs/Dropbox/Dev/rss/reader_api/feeder_db:/code
 web:
   build: ./reader
   ports:
@@ -29,12 +29,22 @@ web:
     COUCHDB_ADDR: boot2docker
     COUCHDB_PORT: 5984
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/master/reader:/code
+   - /mnt/mydocs/Dropbox/Dev/rss/reader_api/reader:/code
 couchdb:
   build: ./couchdb
   ports:
-   - "5984:5984"   
+   - "5984:5984"
   expose:
    - "5984"
   volumes:
-   - /mnt/mydocs/Dropbox/Dev/rss/master/couchdb:/code
+   - /mnt/mydocs/Dropbox/Dev/rss/reader_api/couchdb:/code
+readerapi:
+  build: ./reader_api
+  ports:
+   - "3001:3001"
+  volumes:
+   - /mnt/mydocs/Dropbox/Dev/rss/reader_api/reader_api:/code
+  links:
+   - pgdb
+  env_file:
+   - ./reader_api/src/github.com/mlapierre/reader_api/.env

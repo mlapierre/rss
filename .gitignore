@@ -1,7 +1,12 @@
 /*.sublime-project
 /*.sublime-workspace
-
-feeder/bin/setenv.sh
-/feeder/bin/setenvwin.bat
-/feeder/config/.env
 *.bak
+.env
+
+/feeder/bin/setenv.sh
+/feeder/bin/setenvwin.bat
+/reader_api/bin
+/reader_api/pkg
+/reader_api/src/github.com/lib
+/reader_api/src/github.com/ant0ine
+/reader_api/src/github.com/jinzhu

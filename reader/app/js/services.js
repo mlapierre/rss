@@ -6,6 +6,9 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   var resource = $resource(settings.apiBaseURL + 'feeds/:id', {}, {
     update: {method:'PATCH', params: {id: 'tags'}}
   });
+
+  var new_api = $resource('http://boot2docker:3001/feeds', {});
+
   var _feeds;
   var current_feed_id;
 
@@ -28,13 +31,13 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
     },
 
     getFeeds: function() {
-      return _feeds || resource.query(function(feeds) {
+      return _feeds || new_api.query(function(feeds) {
         _feeds = feeds;
       });
     },
 
     getTagsAndFeeds: function() {
-      return resource.query({id: 'tags'}, function(tags) {
+      return new_api.query(function(tags) {
         _feeds = [];
         for (var i = 0; i < tags.length; i++) {
           if (tags[i].order === undefined) {
