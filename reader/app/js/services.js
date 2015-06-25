@@ -73,7 +73,7 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
   };
 })
 
-.factory('Articles', function($resource, $rootScope, settings, Feed) {
+.factory('Articles', function($resource, $rootScope, $timeout, settings, Feed) {
   var resource = $resource(settings.apiBaseURL + 'entries/feed/:id');
   var db = new PouchDB(settings.couchdbBaseURL + 'article_events');
 
@@ -103,7 +103,8 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       return articles;
     },
 
-    fetch: function(articles, feed_id, num, fetchCallback) {
+    fetch: function(scope, num) {
+      var articles = scope.articles;
       var sort_by = "published";
       var fetch_after = articles[articles.length - 1].published;
       if (fetch_after === null) {
@@ -113,23 +114,24 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
       console.log("Fetching after: " + fetch_after);
 
       resource.query({
-                        id: feed_id,
+                        id: scope.feedId,
                         isArray: true,
                         n: num,
                         sort_by: sort_by,
                         after: fetch_after
-                      }, function(fetched_articles) { postQuery(fetched_articles); } );
+                      }, function(fetched_articles) {
+                        postQuery(fetched_articles);
+                      } );
       function postQuery(fetched_articles) {
-        Array.prototype.push.apply(articles, fetched_articles.slice(0, fetched_articles.length));
-        console.log("fetched " + fetched_articles.length + " more articles");
+        $timeout(function() {
+          console.log("fetched " + fetched_articles.length + " more articles");
+          Array.prototype.push.apply(articles, fetched_articles.slice(0, fetched_articles.length));
 
-        if (articles.length > 15) {
-          articles.splice(0, articles.length - 15);
-        }
-
-        if (fetchCallback) {
-          fetchCallback();
-        }
+          if (articles.length > 15) {
+            articles.splice(0, articles.length - 15);
+          }
+          scope.fetching = false;
+        }, 0);
       }
     },
 

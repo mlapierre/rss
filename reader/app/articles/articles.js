@@ -29,32 +29,30 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       $scope.articles = Articles.getFromFeed($routeParams.feedId);
     }
     $scope.new_article_tag;
-    $scope.selectedIndex = 0;
+    $scope.selectedId = -1;
+    $scope.fetching = false;
 
     $scope.$on('bindHotkeys', function() {
-      var selected_article_id = $scope.articles[$scope.selectedIndex].id;
-      var input_elm = angular.element($('#add_article_tag_' + selected_article_id));
+      var input_elm = angular.element($('#add_article_tag_' + $scope.selectedId));
       Hotkeys.assignHotkeyEvents(input_elm);
     });
 
-    $scope.activateArticle = function($index) {
-      if ($scope.selectedIndex !== $index) {
+    $scope.activateArticle = function(id) {
+      if ($scope.selectedId !== id) {
         logEvent('blur_article');
-        $scope.selectedIndex = $index;
+        $scope.selectedId = id;
         logEvent('focus_article');
 
-        var input_elm = angular.element($('#add_article_tag_' + $scope.articles[$index].id));
+        var input_elm = angular.element($('#add_article_tag_' + id));
         Hotkeys.assignHotkeyEvents(input_elm);
 
         // If the selected article is near the end, fetch more
-        var selected_article_id = $scope.articles[$scope.selectedIndex].id;
-        fetchArticles(selected_article_id);
+        fetchArticles($scope.selectedId);
       }
     }
 
     $scope.addArticleTag = function() {
-      var article_id = $scope.articles[$scope.selectedIndex].id;
-      var input_scope = angular.element($('#add_article_tag_' + article_id)).scope();
+      var input_scope = angular.element($('#add_article_tag_' + $scope.selectedId)).scope();
       if (input_scope.add_article_tag_form.$valid) {
         if (!input_scope.article.article_tags) {
           input_scope.article.article_tags = [];
@@ -63,8 +61,8 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
           return;
         }
         input_scope.article.article_tags.push(input_scope.new_article_tag);
-        Entry.addTag(article_id, input_scope.new_article_tag);
-        $('#add_article_tag_' + article_id).val('');
+        Entry.addTag($scope.selectedId, input_scope.new_article_tag);
+        $('#add_article_tag_' + $scope.selectedId).val('');
       }
     }
 
@@ -86,61 +84,62 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
       return true;
     }
 
-    $scope.openArticleSource = function(index) {
-      if ($scope.selectedIndex !== index) {
+    $scope.isSelected = function(id) {
+      return id === $scope.selectedId;
+    }
+
+    $scope.openArticleSource = function(id) {
+      if ($scope.selectedId !== id) {
         logEvent('blur_article');
-        $scope.selectedIndex = index;
+        $scope.selectedId = id;
         logEvent('focus_article');
       }
       logEvent('open_article_source');
     }
 
     $scope.selectNext = function() {
-      if (!$scope.isRead($scope.selectedIndex)) {
+      if (!$scope.isRead(getIndexFromId($scope.selectedId))) {
         Feed.decrementCurrentFeedCount();
         markSelectedArticleRead();
         hideSelectedArticle();
       }
 
-      if ($scope.selectedIndex !== $scope.$$childTail.$index) {
-        if ($scope.isRead($scope.selectedIndex)) {
+      if (getIndexFromId($scope.selectedId) !== $scope.$$childTail.$index) {
+        if ($scope.isRead(getIndexFromId($scope.selectedId))) {
           logEvent('blur_article');
         }
 
-        $scope.selectedIndex++;
+        $scope.selectedId = getNextId($scope.selectedId);
         $scope.$apply();
         logEvent('focus_article');
       }
-      var selected_article_id = $scope.articles[$scope.selectedIndex].id;
-      scrollToEntry(selected_article_id);
-      var input_elm = angular.element($('#add_article_tag_' + selected_article_id));
+      scrollToEntry($scope.selectedId);
+      var input_elm = angular.element($('#add_article_tag_' + $scope.selectedId));
       Hotkeys.assignHotkeyEvents(input_elm);
 
-      fetchArticles(selected_article_id);
+      fetchArticles($scope.selectedId);
     }
 
     $scope.selectPrev = function() {
-      if ($scope.selectedIndex - 1 < 0) {
-        $scope.selectedIndex = 0;
-      } else {
+      if (getIndexFromId($scope.selectedId) > 0) {
         logEvent('blur_article');
-        $scope.selectedIndex--;
+        $scope.selectedId = getPrevId($scope.selectedId);
         logEvent('focus_article');
       }
       $scope.$apply();
 
-      if ($scope.isRead($scope.selectedIndex)) {
+      if ($scope.isRead(getIndexFromId($scope.selectedId))) {
         Feed.incrementCurrentFeedCount();
         markSelectedArticleUnread();
         showSelectedArticle();
       }
 
-      var input_elm = angular.element($('#add_article_tag_' + $scope.articles[$scope.selectedIndex].id));
+      var input_elm = angular.element($('#add_article_tag_' + $scope.selectedId));
       Hotkeys.assignHotkeyEvents(input_elm);
     }
 
     $scope.toggleRead = function() {
-      if ($scope.isRead($scope.selectedIndex)) {
+      if ($scope.isRead(getIndexFromId($scope.selectedId))) {
         Feed.incrementCurrentFeedCount();
         markSelectedArticleUnread();
       } else {
@@ -151,46 +150,86 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
 
     $scope.removeArticleTag = function(event) {
       var tag = event.target.parentElement.innerText.trim();
-      var article_id = $scope.articles[$scope.selectedIndex].id;
-      var input_scope = angular.element($('#add_article_tag_' + article_id)).scope();
+      var input_scope = angular.element($('#add_article_tag_' + $scope.selectedId)).scope();
       var tag_idx = input_scope.article.article_tags.indexOf(tag);
       input_scope.article.article_tags.splice(tag_idx, 1);
-      Entry.removeTag(article_id, tag);
+      Entry.removeTag(selectedId, tag);
     }
 
     function fetchArticles(selected_article_id) {
+      if ($scope.fetching) {
+        return;
+      }
+
       var unread_count = Feed.currentFeedCount();
+      var selectedIndex = getIndexFromId($scope.selectedId);
       if (unread_count > 0
-          && (unread_count - ($scope.$$childTail.$index - $scope.selectedIndex + 1) > 0)
-          && $scope.selectedIndex > ($scope.articles.length - 6)) {
-        Articles.fetch($scope.articles,
-                       $scope.feedId,
-                       Math.min(5, unread_count),
-                       function() {
-                        setSelectedIndex(selected_article_id);
-                        var input_elm = angular.element($('#add_article_tag_' + selected_article_id));
-                        Hotkeys.assignHotkeyEvents(input_elm);
-                      });
+          && (unread_count - ($scope.$$childTail.$index - selectedIndex + 1) > 0)
+          && selectedIndex > ($scope.articles.length - 6)) {
+        $scope.fetching = true;
+        Articles.fetch($scope, Math.min(5, unread_count));
       }
     }
 
+    function getArticleFromId(id) {
+      for (var i = 0; i < $scope.articles.length; i++) {
+        if ($scope.articles[i].id === id) {
+          return $scope.articles[i];
+        }
+      }
+    }
+
+    function getTitleFromId(id) {
+      for (var i = 0; i < $scope.articles.length; i++) {
+        if ($scope.articles[i].id === id) {
+          return $scope.articles[i].title;
+        }
+      }
+    }
+
+    function getIndexFromId(id) {
+      for (var i = 0; i < $scope.articles.length; i++) {
+        if ($scope.articles[i].id === id) {
+          return i;
+        }
+      }
+    }
+
+    function getNextId(id) {
+      for (var i = 0; i < $scope.articles.length-1; i++) {
+        if ($scope.articles[i].id === id) {
+          return $scope.articles[i+1].id;
+        }
+      }
+      return id;
+    }
+
+    function getPrevId(id) {
+      for (var i = 1; i < $scope.articles.length; i++) {
+        if ($scope.articles[i].id === id) {
+          return $scope.articles[i-1].id;
+        }
+      }
+      return id;
+    }
+
     function logEvent(event) {
-      console.log(event + ' ' + $scope.articles[$scope.selectedIndex].id);
+      //console.log(event + ' ' + $scope.articles[$scope.selectedIndex].id);
       Articles.logEvent({
                           "event": event,
-                          "article_index": $scope.selectedIndex,
-                          "article_id": $scope.articles[$scope.selectedIndex].id
+                          "article_index": getIndexFromId($scope.selectedId),
+                          "article_id": $scope.selectedId
                         });
     }
 
     function hideSelectedArticle() {
-      var article_id = '#article_' + $scope.articles[$scope.selectedIndex].id;
+      var article_id = '#article_' + $scope.selectedId;
       $(article_id).hide();
       logEvent('blur_article');
     }
 
     function markSelectedArticleRead() {
-      var entry = $scope.articles[$scope.selectedIndex];
+      var entry = getArticleFromId($scope.selectedId);
       var read_at = (new Date(Date.now())).toISOString();
       entry.read_at = read_at;
       Entry.markRead(entry.id, read_at);
@@ -198,29 +237,20 @@ angular.module('readerApp.articles', ['ngRoute', 'ngSanitize'])
     }
 
     function markSelectedArticleUnread() {
-      var entry = $scope.articles[$scope.selectedIndex];
+      var entry = getArticleFromId($scope.selectedId);
       entry.read_at = null;
       Entry.markUnread(entry.id);
       logEvent('article_unread');
     }
 
     function scrollToEntry(entry_id) {
-      var article_id = '#article_' + entry_id;
+      var article_id = '#article_' + $scope.selectedId;
       var article_elm = angular.element($(article_id));
       angular.element($('#articles_panel')).scrollToElement(article_elm, 7, 0);
     }
 
-    function setSelectedIndex(selected_article_id) {
-      for (var i = 0; i < $scope.articles.length; i++) {
-        if ($scope.articles[i].id === selected_article_id) {
-          $scope.selectedIndex = i;
-          return;
-        }
-      }
-    }
-
     function showSelectedArticle() {
-      var article_id = '#article_' + $scope.articles[$scope.selectedIndex].id;
+      var article_id = '#article_' + $scope.selectedId;
       $(article_id).show();
     }
   }
