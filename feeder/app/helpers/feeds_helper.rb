@@ -69,12 +69,12 @@ module FeedsHelper
       end
 
       log.info "Importing #{outline.attributes[:xmlUrl]}"
-      feed_source = FeedsHelper.fetch_and_parse(outline.attributes[:xmlUrl]) 
+      feed_source = FeedsHelper.fetch_and_parse(outline.attributes[:xmlUrl])
       if !feed_source.respond_to? :feed_url #TODO more appropriate error handling
         log.warn "Invalid feed. Request returned: #{feed_source.to_s}"
         next
       end
-      
+
       feed = Feed.new
       feed.title = feed_source.title
       feed.description = feed_source.description
@@ -85,7 +85,7 @@ module FeedsHelper
 
       if feed.save
         log.debug "Saving feed entries..."
-        EntriesHelper.save_from(feed_source, feed)      
+        EntriesHelper.save_from(feed_source, feed)
       end
     end
   end
@@ -103,6 +103,18 @@ module FeedsHelper
           feed_tags
         end
       end
+    end
+  end
+
+  def self.updateUnreadCount
+    feeds = Feed.all
+    last_updated = UserEntry.group(:entry_id).maximum(:updated_at)
+    is_read = UserEntry.select(:entry_id).where(entry_id: last_updated.keys, updated_at: last_updated.values).where.not(read_at: nil)
+
+    feeds.each do |feed|
+      user_feed = UserFeed.find_or_create_by feed_id: feed.id
+      user_feed.unread = Entry.where.not(id: is_read).where(feed_id: feed.id).size
+      user_feed.save
     end
   end
 

@@ -55,14 +55,15 @@
   </div>
   <div class="main_wrap">
     <div class="container">
-      
+
       <div ng-controller="feedsPanelController" id="feeds_panel">
         <div id="feeds_header_container">
           <header>
             <h2>Subscriptions</h2>
+            <a href="#" ng-click="syncFeeds()"><img src="images/ic_sync_black_18px.svg" /></a>
             <ul id="feeds_menu">
               <li>
-                <a href="#/feeds/tag"><img src="images/menu.svg"></a>
+                <a href="#/feeds/tag"><img src="images/menu.svg" ></a>
                 <ul>
                   <li>
                     <form name="add_feed_tag_form" ng-submit="addFeedTag()">
@@ -79,6 +80,7 @@
           <form name="add_feed_form" ng-submit="addSubscription()">
             <input id="add_subscription" type="url" placeholder="Add subscription..." ng-model="feed_url">
           </form>
+
         </div>
 
         <div id="feeds_tree" ui-tree="treeCallback" data-drag-delay="150">
@@ -95,14 +97,14 @@
               </ol>
             </li>
           </ol>
-        </div>        
+        </div>
 
       </div>
 
       <div id="articles_panel">
         <div ng-view id="articles_view"/>
       </div>
-      
+
       </div>
     </div> <!-- <div class="container"> -->
 

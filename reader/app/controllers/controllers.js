@@ -10,8 +10,8 @@ angular.module('readerAppControllers', ['duScroll'])
     accept: function(sourceNode, destNodes, destIndex) {
       var sourcetype = sourceNode.$parent.$element.attr('data-type');
       var destType = destNodes.$element.attr('data-type');
-      return (sourcetype === destType); 
-    },    
+      return (sourcetype === destType);
+    },
     dropped: function(event) {
       $scope.saveTags();
     }
@@ -34,7 +34,7 @@ angular.module('readerAppControllers', ['duScroll'])
       console.log("Valid feed");
       Feed.addFeed(input_scope.feed_url);
       $scope.feeds = Feed.getFeeds();
-    } 
+    }
   };
 
   $scope.addFeedTag = function() {
@@ -42,8 +42,12 @@ angular.module('readerAppControllers', ['duScroll'])
     if (input_scope.add_feed_form.$valid) {
       console.log("Valid tag: " + $scope.feed_tag);
       Tag.save({name: input_scope.feed_tag});
-    } 
+    }
   };
+
+  $scope.syncFeeds = function() {
+    Feed.syncFeeds();
+  }
 })
 
 .controller('mainCtrl', ['Hotkeys',

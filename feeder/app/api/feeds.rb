@@ -13,6 +13,13 @@
           Feed.all
         end
 
+        # GET /feeds/sync
+        desc "Sync feeds" # Only updates feed unread counts, for now
+        get "sync" do
+          FeedsHelper.updateUnreadCount
+          { status: 'success' }
+        end
+
         # GET /feeds/tags
         desc "Return all feeds and their tags"
         get "tags" do
