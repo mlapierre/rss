@@ -16,10 +16,6 @@
         # GET /feeds/tags
         desc "Return all feeds and their tags"
         get "tags" do
-          # Get records of read entries
-          last_updated = UserEntry.group(:entry_id).maximum(:updated_at)
-          is_read = UserEntry.select(:entry_id).where(entry_id: last_updated.keys, updated_at: last_updated.values).where.not(read_at: nil)
-
           # Get all tags
           feed_tags = FeedsHelper.getTagsAndFeeds
           if !feed_tags.nil?
@@ -31,10 +27,7 @@
                 feeds = []
                 tag.user_feed_tags.each do |feed_tag|
                   feed = JSON.parse(feed_tag.feed.to_json)
-                  # Get unread count
-                  # TODO Make this more efficient
-                  count = Entry.where.not(id: is_read).where(feed_id: feed["id"]).size
-                  feed["unread_count"] = count
+                  feed["unread_count"] = feed_tag.feed.user_feeds.first.unread
                   feed["order"] = feed_tag.order
                   feeds.append feed
                 end
@@ -43,16 +36,16 @@
                 tag_json["feeds"] = [];
               end
               feed_tags_json.append(tag_json)
-            end 
+            end
             # Add untagged feeds
             feeds = FeedsHelper.getUntaggedFeeds
             feeds_json = JSON.parse(feeds.to_json)
             feeds_json.each do |feed|
-              feed["unread_count"] = Entry.where.not(id: is_read).where(feed_id: feed["id"]).size
+              feed["unread_count"] = feeds.where(id: feed["id"]).first.user_feeds.first.unread
             end
             tag = {
-                    "id":-1, 
-                    "name":"untagged", 
+                    "id":-1,
+                    "name":"untagged",
                     "order":9999999,
                     "feeds": feeds_json
                   }
