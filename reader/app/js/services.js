@@ -4,7 +4,8 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 
 .factory('Feed', function($resource, settings) {
   var resource = $resource(settings.apiBaseURL + 'feeds/:id', {}, {
-    update: {method:'PATCH', params: {id: 'tags'}}
+    update: {method:'PATCH', params: {id: 'tags'}},
+    sync: {method: 'GET', params: {id: 'sync'}}
   });
   var _feeds;
   var current_feed_id;
@@ -65,6 +66,10 @@ angular.module('readerAppServices', ['ngResource', 'appConfig'])
 
     setCurrentFeed: function(feed_id) {
       current_feed_id = feed_id;
+    },
+
+    syncFeeds: function() {
+      resource.sync();
     },
 
     updateTags: function(tags) {
