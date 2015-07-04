@@ -48,7 +48,9 @@
             feeds = FeedsHelper.getUntaggedFeeds
             feeds_json = JSON.parse(feeds.to_json)
             feeds_json.each do |feed|
-              feed["unread_count"] = feeds.where(id: feed["id"]).first.user_feeds.first.unread
+              if feeds.where(id: feed["id"]).first.user_feeds.size > 0
+                feed["unread_count"] = feeds.where(id: feed["id"]).first.user_feeds.first.unread
+              end
             end
             tag = {
                     "id":-1,

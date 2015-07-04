@@ -21,6 +21,7 @@ module FeedsHelper
 
       if @feed.save
         EntriesHelper.save_from(feed_source, @feed)
+        FeedsHelper.updateUnreadCountForOne @feed
         @feed
       end
     end
@@ -107,6 +108,19 @@ module FeedsHelper
   end
 
   def self.updateUnreadCount
+    FeedsHelper.updateUnreadCountForAll
+  end
+
+  def self.updateUnreadCountForOne(feed)
+    last_updated = UserEntry.group(:entry_id).maximum(:updated_at)
+    is_read = UserEntry.select(:entry_id).where(entry_id: last_updated.keys, updated_at: last_updated.values).where.not(read_at: nil)
+
+    user_feed = UserFeed.find_or_create_by feed_id: feed.id
+    user_feed.unread = Entry.where.not(id: is_read).where(feed_id: feed.id).size
+    user_feed.save
+  end
+
+  def self.updateUnreadCountForAll
     feeds = Feed.all
     last_updated = UserEntry.group(:entry_id).maximum(:updated_at)
     is_read = UserEntry.select(:entry_id).where(entry_id: last_updated.keys, updated_at: last_updated.values).where.not(read_at: nil)

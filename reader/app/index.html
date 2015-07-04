@@ -91,7 +91,7 @@
                 <li ng-repeat="feed in tag.feeds" ui-tree-node>
                 <div ui-tree-handle class="feed_wrap">
                   <a href="#/feed/{{feed.id}}" id="feed_{{feed.id}}">{{feed.title}}</a>
-                  <span class="unread_count" ng-hide="{{feed.unread_count}}===0">{{feed.unread_count}}</span>
+                  <span class="unread_count" ng-hide="feed.unread_count === 0">{{feed.unread_count}}</span>
                 </div>
                 </li>
               </ol>
